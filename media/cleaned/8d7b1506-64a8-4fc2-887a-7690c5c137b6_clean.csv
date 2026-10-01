@@ -1,0 +1,401 @@
+student_id,department,program,age,entrance_score,gpa,credits_earned,enrolled_date
+STU10001,Psychology,Undergraduate,18.0,81.0,3.42,106.0,2021-09-06
+STU10002,Mathematics & Statistics,Undergraduate,20.0,82.8,3.87,106.0,2020-12-14
+STU10003,Psychology,Doctoral,26.0,72.2,3.24,23.0,2022-04-28
+STU10004,Biology,Undergraduate,18.0,94.0,3.88,23.0,2021-12-04
+STU10005,Mathematics & Statistics,Doctoral,27.0,69.4,3.38,15.0,2022-03-29
+STU10006,Mathematics & Statistics,Doctoral,28.0,69.4,3.13,101.0,2022-03-13
+STU10007,Biology,Undergraduate,25.0,77.9,2.92,87.0,2021-12-06
+STU10008,Computer Science,Undergraduate,29.0,54.3,2.84,66.0,2021-08-15
+STU10009,Electrical Engineering,Undergraduate,21.0,62.8,3.21,109.0,2021-11-08
+STU10010,Computer Science,Undergraduate,24.0,64.1,2.8,24.0,2021-03-09
+STU10011,Electrical Engineering,Doctoral,22.0,92.6,3.61,115.0,2020-10-15
+STU10012,Psychology,Postgraduate,26.0,75.8,3.01,27.0,2021-09-23
+STU10013,Computer Science,Doctoral,22.0,68.5,3.26,118.0,2022-06-06
+STU10014,Economics,Postgraduate,27.0,61.2,3.2,36.0,2020-11-11
+STU10015,Computer Science,Doctoral,21.0,67.8,3.15,110.0,2021-06-24
+STU10016,Computer Science,Undergraduate,19.0,67.8,3.68,60.0,2021-12-06
+STU10017,Biology,Doctoral,23.0,74.8,3.08,32.0,2021-09-15
+STU10018,Electrical Engineering,Undergraduate,28.0,84.9,3.22,46.0,2022-01-08
+STU10019,Psychology,Undergraduate,27.0,77.5,2.91,93.0,2021-02-23
+STU10020,Economics,Doctoral,21.0,59.1,3.11,32.0,2021-12-18
+STU10021,Biology,Postgraduate,28.0,83.9,3.55,100.0,2022-03-25
+STU10022,Mathematics & Statistics,Doctoral,23.0,73.6,3.25,119.0,2020-10-28
+STU10023,Mathematics & Statistics,Undergraduate,30.0,57.3,2.85,52.0,2021-10-16
+STU10024,Electrical Engineering,Undergraduate,21.0,69.5,3.52,84.0,2021-07-20
+STU10025,Mathematics & Statistics,Doctoral,25.0,79.1,2.98,62.0,2022-06-21
+STU10026,Biology,Undergraduate,22.0,78.9,3.32,29.0,2021-11-05
+STU10027,Psychology,Doctoral,26.0,66.9,3.36,45.0,2022-04-22
+STU10028,Biology,Doctoral,24.0,87.4,3.81,58.0,2021-04-13
+STU10029,Mathematics & Statistics,Doctoral,25.0,64.9,3.09,23.0,2020-10-19
+STU10030,Computer Science,Undergraduate,28.0,79.0,3.67,32.0,2022-07-29
+STU10031,Biology,Doctoral,19.0,69.2,3.2,61.0,2021-09-26
+STU10032,Economics,Postgraduate,26.0,61.7,2.81,44.0,2022-03-21
+STU10033,Computer Science,Doctoral,29.0,84.8,3.87,26.0,2022-07-31
+STU10034,Economics,Postgraduate,30.0,74.1,3.58,94.0,2021-08-15
+STU10035,Computer Science,Postgraduate,24.0,79.3,3.27,32.0,2021-09-12
+STU10036,Computer Science,Doctoral,29.0,79.3,3.81,45.0,2022-01-26
+STU10037,Mathematics & Statistics,Doctoral,19.0,74.6,3.73,92.0,2021-03-07
+STU10038,Psychology,Doctoral,27.0,43.6,2.99,37.0,2021-04-02
+STU10039,Electrical Engineering,Undergraduate,26.0,76.0,3.29,111.0,2022-02-26
+STU10040,Computer Science,Doctoral,23.0,76.1,2.87,74.0,2020-09-20
+STU10041,Computer Science,Postgraduate,30.0,72.4,3.39,51.0,2021-04-05
+STU10042,Computer Science,Undergraduate,27.0,92.7,3.54,22.0,2020-11-27
+STU10043,Psychology,Postgraduate,19.0,65.3,3.05,109.0,2022-02-28
+STU10044,Mathematics & Statistics,Undergraduate,28.0,86.0,3.63,72.0,2022-03-17
+STU10045,Mathematics & Statistics,Postgraduate,26.0,68.6,3.36,89.0,2021-08-11
+STU10046,Mathematics & Statistics,Doctoral,30.0,76.2,3.61,105.0,2021-03-25
+STU10047,Psychology,Postgraduate,24.0,66.6,3.12,97.0,2022-06-28
+STU10048,Electrical Engineering,Postgraduate,26.0,70.3,2.9,69.0,2021-02-01
+STU10049,Mathematics & Statistics,Undergraduate,19.0,78.6,3.48,55.0,2020-09-22
+STU10050,Economics,Doctoral,21.0,75.1,3.29,87.0,2021-04-14
+STU10051,Computer Science,Undergraduate,29.0,58.0,2.94,92.0,2020-10-31
+STU10052,Mathematics & Statistics,Undergraduate,18.0,70.9,3.08,54.0,2020-12-11
+STU10053,Economics,Undergraduate,22.0,73.1,3.42,97.0,2022-11-01
+STU10054,Mathematics & Statistics,Doctoral,20.0,97.6,3.8,104.0,2022-08-04
+STU10055,Economics,Postgraduate,21.0,78.1,3.39,112.0,2021-12-29
+STU10056,Biology,Undergraduate,19.0,52.0,2.93,24.0,2022-07-07
+STU10057,Biology,Postgraduate,24.0,75.7,3.98,64.0,2021-12-23
+STU10058,Psychology,Undergraduate,28.0,72.7,3.38,95.0,2022-06-24
+STU10059,Computer Science,Undergraduate,24.0,74.6,3.05,105.0,2021-08-14
+STU10060,Computer Science,Undergraduate,21.0,88.7,3.78,36.0,2022-04-03
+STU10061,Biology,Undergraduate,24.0,84.5,3.29,35.0,2021-06-13
+STU10062,Biology,Undergraduate,19.0,91.8,3.3,68.0,2022-03-18
+STU10063,Computer Science,Undergraduate,28.0,82.0,4.0,81.0,2020-09-16
+STU10064,Computer Science,Undergraduate,20.0,63.1,2.99,64.0,2022-11-01
+STU10065,Biology,Undergraduate,24.0,76.2,3.25,19.0,2021-02-16
+STU10066,Biology,Undergraduate,24.0,56.4,3.03,45.0,2021-10-12
+STU10067,Electrical Engineering,Postgraduate,29.0,62.3,3.24,105.0,2022-03-24
+STU10068,Psychology,Doctoral,25.0,64.0,3.54,31.0,2021-03-14
+STU10069,Electrical Engineering,Undergraduate,18.0,65.6,3.1,86.0,2022-10-03
+STU10070,Computer Science,Doctoral,23.0,84.8,3.22,19.0,2020-10-22
+STU10071,Economics,Postgraduate,26.0,77.7,3.73,79.0,2021-09-02
+STU10072,Computer Science,Doctoral,19.0,55.7,3.05,120.0,2021-10-03
+STU10073,Computer Science,Doctoral,19.0,78.1,3.6,98.0,2021-04-29
+STU10074,Biology,Undergraduate,27.0,60.2,2.75,43.0,2022-04-16
+STU10075,Economics,Undergraduate,27.0,81.3,3.54,22.0,2021-04-11
+STU10076,Psychology,Doctoral,27.0,78.0,3.49,78.0,2021-07-21
+STU10077,Electrical Engineering,Undergraduate,28.0,66.8,3.26,103.0,2021-07-19
+STU10078,Mathematics & Statistics,Postgraduate,24.0,78.5,3.23,28.0,2022-07-20
+STU10079,Psychology,Postgraduate,25.0,97.4,3.87,52.0,2020-11-14
+STU10080,Computer Science,Postgraduate,27.0,60.7,3.26,84.0,2020-12-12
+STU10081,Computer Science,Doctoral,21.0,63.3,3.34,76.0,2021-05-30
+STU10082,Mathematics & Statistics,Postgraduate,19.0,88.9,3.4,43.0,2021-09-14
+STU10083,Electrical Engineering,Undergraduate,25.0,86.6,3.66,118.0,2022-11-03
+STU10084,Psychology,Postgraduate,27.0,84.9,4.0,115.0,2022-02-07
+STU10085,Economics,Undergraduate,28.0,72.1,3.11,116.0,2022-03-22
+STU10086,Electrical Engineering,Doctoral,19.0,64.3,2.95,29.0,2021-05-29
+STU10087,Computer Science,Undergraduate,29.0,74.1,3.42,82.0,2021-07-02
+STU10088,Electrical Engineering,Postgraduate,27.0,78.3,3.62,38.0,2021-08-18
+STU10089,Mathematics & Statistics,Doctoral,28.0,75.2,3.72,45.0,2022-01-31
+STU10090,Biology,Postgraduate,18.0,71.8,3.97,23.0,2022-12-06
+STU10091,Biology,Postgraduate,18.0,82.5,3.27,12.0,2021-08-08
+STU10092,Mathematics & Statistics,Doctoral,22.0,62.1,3.24,32.0,2021-11-27
+STU10093,Economics,Doctoral,24.0,72.3,3.48,83.0,2020-10-09
+STU10094,Computer Science,Undergraduate,29.0,80.7,3.43,31.0,2022-03-13
+STU10095,Computer Science,Postgraduate,27.0,64.8,2.79,82.0,2021-01-30
+STU10096,Biology,Undergraduate,18.0,69.6,3.47,51.0,2021-09-09
+STU10097,Computer Science,Postgraduate,21.0,77.6,3.09,99.0,2021-05-14
+STU10098,Psychology,Undergraduate,23.0,77.1,3.48,111.0,2022-03-28
+STU10099,Biology,Doctoral,29.0,64.4,3.2,31.0,2021-01-05
+STU10100,Mathematics & Statistics,Undergraduate,24.0,75.7,3.08,15.0,2021-03-03
+STU10101,Psychology,Postgraduate,30.0,79.3,3.57,64.0,2022-07-18
+STU10102,Psychology,Undergraduate,22.0,88.0,3.85,32.0,2020-12-20
+STU10103,Biology,Undergraduate,25.0,58.5,2.82,40.0,2021-03-24
+STU10104,Biology,Postgraduate,22.0,81.2,3.59,117.0,2021-04-22
+STU10105,Mathematics & Statistics,Undergraduate,28.0,81.2,4.0,36.0,2021-10-14
+STU10106,Electrical Engineering,Postgraduate,19.0,81.9,3.76,110.0,2021-06-13
+STU10107,Electrical Engineering,Doctoral,26.0,86.4,3.72,63.0,2022-07-28
+STU10108,Economics,Postgraduate,18.0,71.2,3.47,26.0,2021-05-26
+STU10109,Mathematics & Statistics,Doctoral,22.0,65.7,3.12,16.0,2020-12-21
+STU10110,Economics,Postgraduate,23.0,69.2,3.27,105.0,2021-07-19
+STU10111,Biology,Doctoral,26.0,100.0,3.33,26.0,2021-09-30
+STU10112,Economics,Undergraduate,22.0,83.2,3.09,17.0,2021-11-21
+STU10113,Computer Science,Doctoral,30.0,69.3,3.52,80.0,2022-07-19
+STU10114,Mathematics & Statistics,Postgraduate,24.0,75.8,3.09,20.0,2022-07-13
+STU10115,Electrical Engineering,Doctoral,23.0,66.4,3.37,96.0,2021-06-01
+STU10116,Psychology,Postgraduate,26.0,66.2,3.25,51.0,2022-07-15
+STU10117,Biology,Postgraduate,24.0,75.5,3.2,101.0,2021-06-30
+STU10118,Economics,Undergraduate,21.0,100.0,3.96,65.0,2022-07-13
+STU10119,Biology,Doctoral,29.0,50.7,2.96,34.0,2022-05-24
+STU10120,Economics,Postgraduate,24.0,67.1,3.42,82.0,2020-01-09
+STU10121,Electrical Engineering,Postgraduate,21.0,65.5,3.15,67.0,2022-04-17
+STU10122,Economics,Doctoral,23.0,81.1,3.68,71.0,2021-11-27
+STU10123,Biology,Doctoral,21.0,60.6,3.01,77.0,2021-12-29
+STU10124,Psychology,Undergraduate,28.0,69.3,3.08,22.0,2021-06-18
+STU10125,Economics,Doctoral,28.0,96.2,3.83,91.0,2021-10-08
+STU10126,Computer Science,Undergraduate,28.0,59.9,3.31,51.0,2021-04-19
+STU10127,Mathematics & Statistics,Undergraduate,18.0,100.0,4.0,17.0,2021-09-05
+STU10128,Biology,Doctoral,30.0,56.8,2.9,21.0,2021-11-12
+STU10129,Biology,Doctoral,27.0,90.2,3.45,36.0,2021-09-29
+STU10130,Biology,Postgraduate,21.0,80.3,3.64,30.0,2022-04-07
+STU10131,Psychology,Undergraduate,30.0,63.9,3.14,110.0,2020-12-19
+STU10132,Biology,Undergraduate,20.0,40.0,2.46,114.0,2022-02-13
+STU10133,Biology,Undergraduate,26.0,72.0,2.98,43.0,2021-03-01
+STU10134,Biology,Undergraduate,30.0,94.6,3.35,71.0,2022-07-16
+STU10135,Economics,Doctoral,27.0,69.7,3.29,52.0,2021-11-28
+STU10136,Economics,Doctoral,26.0,92.3,3.3,66.0,2022-03-16
+STU10137,Biology,Undergraduate,29.0,89.0,3.6,72.0,2021-05-12
+STU10138,Electrical Engineering,Undergraduate,28.0,63.2,3.25,47.0,2022-02-16
+STU10139,Biology,Doctoral,21.0,77.4,3.24,47.0,2021-11-25
+STU10140,Computer Science,Doctoral,22.0,75.8,3.27,42.0,2021-06-06
+STU10141,Electrical Engineering,Postgraduate,26.0,76.4,3.54,22.0,2021-01-20
+STU10142,Mathematics & Statistics,Undergraduate,24.0,94.0,3.38,100.0,2021-04-02
+STU10143,Psychology,Undergraduate,19.0,100.0,3.31,65.0,2021-10-23
+STU10144,Electrical Engineering,Doctoral,25.0,73.2,3.46,65.0,2020-03-11
+STU10145,Mathematics & Statistics,Postgraduate,24.0,78.4,3.26,110.0,2022-04-22
+STU10146,Psychology,Undergraduate,30.0,72.5,3.18,85.0,2021-09-25
+STU10147,Biology,Undergraduate,23.0,67.9,3.43,50.0,2021-05-10
+STU10148,Biology,Doctoral,29.0,79.3,3.25,106.0,2022-03-14
+STU10149,Economics,Undergraduate,25.0,85.8,3.62,40.0,2021-07-06
+STU10150,Biology,Postgraduate,18.0,84.8,3.68,61.0,2021-11-08
+STU10151,Psychology,Doctoral,30.0,65.1,3.03,63.0,2021-02-17
+STU10152,Biology,Undergraduate,27.0,84.0,3.66,80.0,2020-09-28
+STU10153,Biology,Doctoral,27.0,74.7,3.37,96.0,2020-09-28
+STU10154,Computer Science,Doctoral,24.0,90.3,3.48,29.0,2021-12-17
+STU10155,Mathematics & Statistics,Undergraduate,22.0,81.6,3.42,60.0,2021-02-08
+STU10156,Mathematics & Statistics,Postgraduate,23.0,72.4,3.58,55.0,2021-09-24
+STU10157,Electrical Engineering,Postgraduate,22.0,84.9,3.73,118.0,2020-11-23
+STU10158,Biology,Undergraduate,29.0,90.7,3.64,81.0,2020-10-24
+STU10159,Electrical Engineering,Undergraduate,28.0,83.2,3.42,20.0,2022-06-30
+STU10160,Computer Science,Undergraduate,21.0,78.9,3.39,37.0,2020-09-21
+STU10161,Economics,Undergraduate,21.0,76.2,3.52,28.0,2021-12-29
+STU10162,Psychology,Undergraduate,27.0,65.2,3.7,39.0,2021-12-21
+STU10163,Psychology,Postgraduate,30.0,62.9,2.83,59.0,2021-02-19
+STU10164,Economics,Doctoral,29.0,88.9,3.8,103.0,2020-12-27
+STU10165,Mathematics & Statistics,Postgraduate,19.0,82.5,3.64,86.0,2020-09-27
+STU10166,Electrical Engineering,Doctoral,28.0,74.9,3.12,60.0,2021-12-10
+STU10167,Psychology,Undergraduate,19.0,75.9,3.2,87.0,2022-05-06
+STU10168,Mathematics & Statistics,Undergraduate,29.0,86.7,3.52,110.0,2021-06-07
+STU10169,Psychology,Doctoral,30.0,65.1,3.09,27.0,2022-03-04
+STU10170,Computer Science,Postgraduate,26.0,80.0,3.3,66.0,2022-10-07
+STU10171,Electrical Engineering,Undergraduate,26.0,65.1,3.23,94.0,2021-08-16
+STU10172,Computer Science,Postgraduate,25.0,77.9,3.28,25.0,2021-11-18
+STU10173,Electrical Engineering,Doctoral,25.0,69.3,3.31,102.0,2021-04-02
+STU10174,Biology,Undergraduate,29.0,57.6,2.68,78.0,2022-06-29
+STU10175,Electrical Engineering,Doctoral,30.0,66.4,3.14,80.0,2022-09-01
+STU10176,Biology,Postgraduate,29.0,78.7,3.79,87.0,2021-02-06
+STU10177,Electrical Engineering,Undergraduate,19.0,85.3,3.5,47.0,2021-06-12
+STU10178,Mathematics & Statistics,Postgraduate,27.0,74.8,3.1,90.0,2022-07-17
+STU10179,Biology,Postgraduate,18.0,74.8,3.27,75.0,2021-07-30
+STU10180,Mathematics & Statistics,Postgraduate,21.0,78.9,3.21,57.0,2021-05-23
+STU10181,Electrical Engineering,Postgraduate,27.0,81.2,3.84,101.0,2021-10-06
+STU10182,Economics,Undergraduate,26.0,73.7,3.43,36.0,2020-11-27
+STU10183,Mathematics & Statistics,Doctoral,24.0,83.3,3.4,74.0,2022-03-23
+STU10184,Mathematics & Statistics,Doctoral,25.0,77.7,3.4,94.0,2022-01-16
+STU10185,Biology,Undergraduate,19.0,76.2,3.18,49.0,2021-04-15
+STU10186,Biology,Doctoral,21.0,75.3,3.48,51.0,2022-12-07
+STU10187,Economics,Postgraduate,25.0,92.4,3.9,82.0,2022-02-26
+STU10188,Electrical Engineering,Postgraduate,29.0,100.0,3.61,82.0,2021-05-08
+STU10189,Electrical Engineering,Doctoral,25.0,85.5,3.58,46.0,2021-11-07
+STU10190,Electrical Engineering,Undergraduate,19.0,100.0,3.6,104.0,2021-03-17
+STU10191,Electrical Engineering,Undergraduate,29.0,64.9,3.02,80.0,2021-09-03
+STU10192,Mathematics & Statistics,Undergraduate,29.0,49.5,2.76,73.0,2021-11-06
+STU10193,Psychology,Doctoral,30.0,65.9,3.22,79.0,2022-05-05
+STU10194,Electrical Engineering,Undergraduate,21.0,79.1,3.89,49.0,2021-04-21
+STU10195,Electrical Engineering,Undergraduate,22.0,86.4,3.41,13.0,2022-01-03
+STU10196,Mathematics & Statistics,Postgraduate,18.0,64.2,3.28,18.0,2022-03-21
+STU10197,Electrical Engineering,Doctoral,20.0,59.2,3.52,93.0,2022-01-16
+STU10198,Computer Science,Undergraduate,27.0,89.2,3.49,48.0,2021-12-25
+STU10199,Biology,Postgraduate,23.0,54.4,3.32,35.0,2020-10-23
+STU10200,Electrical Engineering,Postgraduate,19.0,73.6,3.63,117.0,2020-06-11
+STU10201,Biology,Postgraduate,19.0,55.9,2.86,85.0,2022-07-06
+STU10202,Psychology,Undergraduate,20.0,75.1,3.36,31.0,2022-03-31
+STU10203,Electrical Engineering,Undergraduate,21.0,69.6,3.41,27.0,2022-03-26
+STU10204,Biology,Doctoral,27.0,62.2,3.08,113.0,2022-05-27
+STU10205,Mathematics & Statistics,Doctoral,24.0,76.4,3.5,69.0,2021-11-28
+STU10206,Electrical Engineering,Doctoral,24.0,83.5,3.22,51.0,2022-06-04
+STU10207,Economics,Undergraduate,27.0,56.6,3.34,106.0,2020-11-12
+STU10208,Mathematics & Statistics,Doctoral,21.0,79.0,3.23,45.0,2022-09-07
+STU10209,Computer Science,Undergraduate,21.0,93.6,3.71,34.0,2022-03-20
+STU10210,Computer Science,Undergraduate,18.0,89.2,3.62,64.0,2021-06-12
+STU10211,Psychology,Doctoral,25.0,99.7,4.0,49.0,2020-04-10
+STU10212,Mathematics & Statistics,Postgraduate,29.0,72.0,3.54,48.0,2021-09-12
+STU10213,Computer Science,Doctoral,21.0,82.7,3.83,45.0,2022-03-06
+STU10214,Economics,Doctoral,30.0,63.4,3.31,37.0,2021-10-11
+STU10215,Computer Science,Doctoral,21.0,87.7,3.14,94.0,2021-01-31
+STU10216,Electrical Engineering,Undergraduate,19.0,60.8,2.58,19.0,2021-02-17
+STU10217,Electrical Engineering,Doctoral,29.0,71.8,3.47,117.0,2022-06-04
+STU10218,Electrical Engineering,Postgraduate,19.0,93.0,3.69,71.0,2021-09-07
+STU10219,Psychology,Postgraduate,22.0,94.5,3.36,76.0,2022-07-03
+STU10220,Biology,Postgraduate,19.0,54.6,2.97,88.0,2020-11-10
+STU10221,Biology,Doctoral,23.0,79.6,3.42,89.0,2021-05-15
+STU10222,Computer Science,Undergraduate,21.0,50.2,2.88,98.0,2022-04-13
+STU10223,Economics,Undergraduate,30.0,59.3,3.23,98.0,2021-03-06
+STU10224,Economics,Undergraduate,30.0,79.4,3.19,108.0,2021-02-27
+STU10225,Biology,Doctoral,28.0,68.8,2.97,68.0,2021-12-06
+STU10226,Mathematics & Statistics,Doctoral,24.0,74.2,3.57,93.0,2022-01-17
+STU10227,Computer Science,Postgraduate,23.0,63.2,3.26,64.0,2021-08-08
+STU10228,Electrical Engineering,Doctoral,19.0,68.6,3.04,32.0,2021-04-08
+STU10229,Biology,Doctoral,25.0,73.7,3.07,48.0,2022-11-07
+STU10230,Biology,Doctoral,18.0,68.4,2.93,70.0,2020-11-30
+STU10231,Electrical Engineering,Postgraduate,23.0,98.6,3.78,26.0,2021-10-19
+STU10232,Economics,Undergraduate,28.0,66.6,3.25,81.0,2021-12-18
+STU10233,Biology,Undergraduate,21.0,73.7,3.27,78.0,2021-06-09
+STU10234,Economics,Postgraduate,28.0,82.4,3.67,68.0,2020-10-23
+STU10235,Mathematics & Statistics,Postgraduate,26.0,68.6,3.09,28.0,2021-06-22
+STU10236,Biology,Doctoral,25.0,71.7,2.72,27.0,2020-09-30
+STU10237,Psychology,Doctoral,30.0,56.8,3.36,42.0,2021-10-02
+STU10238,Electrical Engineering,Doctoral,18.0,94.7,3.64,82.0,2021-10-23
+STU10239,Computer Science,Undergraduate,19.0,81.9,3.55,71.0,2020-12-30
+STU10240,Psychology,Undergraduate,25.0,100.0,4.0,103.0,2021-06-26
+STU10241,Economics,Doctoral,22.0,73.5,3.08,65.0,2022-08-01
+STU10242,Biology,Undergraduate,25.0,55.7,3.05,82.0,2021-01-27
+STU10243,Biology,Undergraduate,27.0,65.9,2.83,77.0,2021-01-18
+STU10244,Computer Science,Postgraduate,30.0,67.2,2.94,113.0,2021-10-30
+STU10245,Electrical Engineering,Doctoral,22.0,95.2,3.93,117.0,2020-03-09
+STU10246,Electrical Engineering,Doctoral,22.0,74.9,3.72,119.0,2022-04-25
+STU10247,Economics,Doctoral,25.0,75.9,3.15,31.0,2021-02-12
+STU10248,Economics,Postgraduate,23.0,93.3,3.81,54.0,2022-03-20
+STU10249,Economics,Postgraduate,25.0,62.6,3.08,53.0,2021-03-13
+STU10250,Psychology,Undergraduate,27.0,64.5,2.82,61.0,2021-04-28
+STU10251,Biology,Undergraduate,23.0,86.1,4.0,107.0,2021-12-29
+STU10252,Psychology,Postgraduate,24.0,58.2,3.19,96.0,2022-06-30
+STU10253,Mathematics & Statistics,Postgraduate,18.0,67.2,3.09,28.0,2022-01-28
+STU10254,Economics,Postgraduate,19.0,67.9,3.01,120.0,2021-11-25
+STU10255,Computer Science,Doctoral,25.0,75.6,3.15,13.0,2021-01-26
+STU10256,Biology,Doctoral,20.0,78.2,3.4,21.0,2021-12-25
+STU10257,Electrical Engineering,Postgraduate,27.0,72.1,3.07,100.0,2021-10-13
+STU10258,Psychology,Undergraduate,23.0,68.1,3.41,98.0,2022-01-03
+STU10259,Biology,Postgraduate,28.0,81.0,3.21,103.0,2022-01-13
+STU10260,Economics,Undergraduate,27.0,76.2,3.56,20.0,2021-04-29
+STU10261,Psychology,Doctoral,22.0,55.0,3.13,41.0,2020-02-12
+STU10262,Biology,Undergraduate,30.0,67.0,3.35,93.0,2020-12-12
+STU10263,Biology,Undergraduate,29.0,65.8,2.73,50.0,2020-09-30
+STU10264,Computer Science,Postgraduate,30.0,55.5,3.01,19.0,2021-06-28
+STU10265,Electrical Engineering,Postgraduate,24.0,78.1,3.18,30.0,2021-09-05
+STU10266,Economics,Postgraduate,27.0,82.7,3.07,99.0,2021-04-03
+STU10267,Mathematics & Statistics,Undergraduate,19.0,74.2,3.03,90.0,2021-09-27
+STU10268,Economics,Doctoral,21.0,67.2,3.22,75.0,2022-04-21
+STU10269,Mathematics & Statistics,Undergraduate,25.0,64.7,3.07,93.0,2021-05-19
+STU10270,Biology,Postgraduate,28.0,87.1,3.42,13.0,2021-12-21
+STU10271,Electrical Engineering,Doctoral,26.0,85.0,3.25,32.0,2020-11-15
+STU10272,Biology,Postgraduate,27.0,81.4,3.83,50.0,2022-06-17
+STU10273,Biology,Doctoral,22.0,45.3,2.62,70.0,2021-07-07
+STU10274,Mathematics & Statistics,Postgraduate,25.0,81.9,3.42,25.0,2021-01-05
+STU10275,Biology,Doctoral,23.0,79.5,3.28,85.0,2021-06-30
+STU10276,Psychology,Postgraduate,18.0,76.0,3.33,118.0,2022-07-07
+STU10277,Biology,Postgraduate,18.0,89.0,3.67,84.0,2020-10-21
+STU10278,Economics,Doctoral,25.0,79.1,3.32,118.0,2021-06-21
+STU10279,Mathematics & Statistics,Doctoral,30.0,69.1,3.14,57.0,2021-04-13
+STU10280,Psychology,Undergraduate,27.0,79.7,3.33,44.0,2022-07-27
+STU10281,Psychology,Doctoral,28.0,78.5,3.93,119.0,2021-01-19
+STU10282,Psychology,Undergraduate,28.0,85.5,3.46,94.0,2020-11-10
+STU10283,Electrical Engineering,Postgraduate,18.0,89.4,3.51,86.0,2021-09-09
+STU10284,Psychology,Undergraduate,19.0,50.5,2.66,49.0,2021-01-08
+STU10285,Psychology,Postgraduate,20.0,52.6,2.86,37.0,2021-01-14
+STU10286,Economics,Postgraduate,26.0,75.2,3.77,76.0,2021-07-06
+STU10287,Mathematics & Statistics,Postgraduate,25.0,78.9,3.37,115.0,2021-06-30
+STU10288,Psychology,Postgraduate,30.0,85.0,2.98,26.0,2021-12-24
+STU10289,Computer Science,Undergraduate,30.0,77.8,3.59,40.0,2022-07-25
+STU10290,Psychology,Doctoral,24.0,57.3,3.32,120.0,2022-03-25
+STU10291,Electrical Engineering,Undergraduate,30.0,79.1,3.32,62.0,2020-09-15
+STU10292,Electrical Engineering,Doctoral,19.0,82.6,4.0,70.0,2021-09-13
+STU10293,Psychology,Doctoral,28.0,77.2,3.45,45.0,2022-04-22
+STU10294,Biology,Doctoral,23.0,69.5,3.04,25.0,2022-07-24
+STU10295,Mathematics & Statistics,Postgraduate,18.0,85.0,3.32,91.0,2022-03-29
+STU10296,Electrical Engineering,Doctoral,21.0,75.9,3.25,94.0,2020-04-11
+STU10297,Psychology,Postgraduate,29.0,80.7,3.54,50.0,2022-06-27
+STU10298,Biology,Undergraduate,20.0,87.5,3.45,17.0,2020-09-10
+STU10299,Electrical Engineering,Postgraduate,19.0,71.8,3.05,24.0,2021-04-29
+STU10300,Economics,Undergraduate,24.0,69.7,3.35,70.0,2021-09-15
+STU10301,Psychology,Doctoral,29.0,84.1,3.28,81.0,2021-04-11
+STU10302,Economics,Doctoral,29.0,85.4,3.88,31.0,2021-10-30
+STU10303,Psychology,Undergraduate,25.0,80.0,3.91,90.0,2021-10-23
+STU10304,Electrical Engineering,Undergraduate,29.0,65.7,2.87,59.0,2021-11-04
+STU10305,Biology,Postgraduate,21.0,53.7,3.34,58.0,2020-11-12
+STU10306,Psychology,Postgraduate,26.0,82.9,3.48,94.0,2021-03-09
+STU10307,Computer Science,Postgraduate,22.0,78.4,3.13,36.0,2021-04-01
+STU10308,Biology,Undergraduate,28.0,100.0,3.83,39.0,2022-06-20
+STU10309,Psychology,Doctoral,18.0,76.3,3.55,18.0,2021-08-08
+STU10310,Mathematics & Statistics,Undergraduate,30.0,80.8,3.51,84.0,2021-03-30
+STU10311,Computer Science,Doctoral,21.0,65.5,3.3,87.0,2021-10-04
+STU10312,Mathematics & Statistics,Postgraduate,30.0,97.6,4.0,30.0,2022-04-05
+STU10313,Computer Science,Postgraduate,20.0,94.1,3.57,28.0,2022-08-03
+STU10314,Electrical Engineering,Undergraduate,19.0,63.1,3.1,96.0,2020-09-27
+STU10315,Mathematics & Statistics,Undergraduate,23.0,75.7,3.64,113.0,2021-02-05
+STU10316,Economics,Postgraduate,18.0,54.7,3.37,34.0,2021-05-30
+STU10317,Computer Science,Undergraduate,29.0,73.1,3.21,65.0,2022-02-21
+STU10318,Computer Science,Doctoral,19.0,62.9,2.72,72.0,2021-04-12
+STU10319,Electrical Engineering,Doctoral,27.0,84.9,3.55,25.0,2021-07-12
+STU10320,Economics,Undergraduate,27.0,59.5,2.75,17.0,2022-07-07
+STU10321,Economics,Postgraduate,25.0,71.0,3.7,94.0,2020-02-10
+STU10322,Computer Science,Postgraduate,24.0,71.9,2.92,66.0,2020-12-20
+STU10323,Biology,Doctoral,25.0,72.1,3.23,21.0,2020-11-22
+STU10324,Electrical Engineering,Doctoral,20.0,42.6,2.75,20.0,2021-08-01
+STU10325,Electrical Engineering,Doctoral,28.0,72.2,3.47,86.0,2022-03-16
+STU10326,Psychology,Postgraduate,24.0,97.2,4.0,88.0,2022-02-26
+STU10327,Electrical Engineering,Postgraduate,26.0,71.8,3.02,89.0,2021-11-15
+STU10328,Computer Science,Doctoral,19.0,100.0,3.81,95.0,2022-06-29
+STU10329,Economics,Doctoral,21.0,75.2,3.35,67.0,2021-07-12
+STU10330,Mathematics & Statistics,Postgraduate,23.0,77.4,3.36,117.0,2021-09-12
+STU10331,Biology,Postgraduate,29.0,68.1,3.09,24.0,2021-07-18
+STU10332,Biology,Postgraduate,28.0,74.6,3.21,44.0,2021-09-19
+STU10333,Mathematics & Statistics,Doctoral,25.0,66.4,3.22,20.0,2020-03-12
+STU10334,Computer Science,Undergraduate,24.0,71.9,3.67,24.0,2021-09-17
+STU10335,Mathematics & Statistics,Doctoral,18.0,43.2,3.05,87.0,2022-03-30
+STU10336,Economics,Postgraduate,28.0,90.0,3.1,27.0,2021-10-26
+STU10337,Electrical Engineering,Doctoral,30.0,70.9,3.18,66.0,2020-10-23
+STU10338,Electrical Engineering,Doctoral,22.0,58.1,2.85,57.0,2020-12-16
+STU10339,Economics,Doctoral,21.0,61.7,3.55,31.0,2022-05-07
+STU10340,Biology,Undergraduate,19.0,86.2,3.87,56.0,2022-03-24
+STU10341,Electrical Engineering,Undergraduate,30.0,83.7,3.22,47.0,2022-11-04
+STU10342,Mathematics & Statistics,Postgraduate,26.0,68.7,3.36,110.0,2022-05-30
+STU10343,Economics,Doctoral,28.0,60.3,3.26,83.0,2020-09-27
+STU10344,Economics,Doctoral,29.0,72.1,3.2,46.0,2020-09-30
+STU10345,Mathematics & Statistics,Postgraduate,29.0,83.5,3.61,109.0,2021-07-14
+STU10346,Electrical Engineering,Postgraduate,18.0,70.7,3.56,35.0,2021-01-25
+STU10347,Economics,Doctoral,24.0,62.0,3.27,20.0,2021-01-24
+STU10348,Psychology,Doctoral,18.0,82.1,3.4,23.0,2022-02-26
+STU10349,Mathematics & Statistics,Postgraduate,24.0,78.9,3.11,70.0,2021-08-16
+STU10350,Mathematics & Statistics,Postgraduate,22.0,86.1,3.5,104.0,2021-07-30
+STU10351,Economics,Doctoral,19.0,68.7,3.5,18.0,2021-07-02
+STU10352,Mathematics & Statistics,Doctoral,18.0,66.5,2.84,98.0,2020-11-23
+STU10353,Electrical Engineering,Postgraduate,28.0,56.3,3.16,66.0,2022-11-01
+STU10354,Economics,Postgraduate,24.0,59.6,3.51,46.0,2021-09-04
+STU10355,Economics,Undergraduate,23.0,50.0,3.32,67.0,2020-12-23
+STU10356,Electrical Engineering,Doctoral,28.0,77.5,3.37,87.0,2022-12-01
+STU10357,Economics,Doctoral,22.0,68.5,3.33,17.0,2021-04-14
+STU10358,Biology,Doctoral,18.0,74.5,3.62,12.0,2021-03-29
+STU10359,Electrical Engineering,Undergraduate,30.0,76.4,3.41,29.0,2021-05-20
+STU10360,Electrical Engineering,Postgraduate,19.0,70.6,3.26,12.0,2022-01-23
+STU10361,Psychology,Postgraduate,20.0,78.7,2.99,28.0,2021-09-25
+STU10362,Economics,Doctoral,21.0,58.8,3.24,76.0,2022-03-27
+STU10363,Psychology,Postgraduate,19.0,77.1,3.34,62.0,2020-10-14
+STU10364,Biology,Undergraduate,25.0,75.2,3.44,21.0,2021-07-18
+STU10365,Economics,Postgraduate,27.0,68.5,3.04,63.0,2022-06-18
+STU10366,Biology,Postgraduate,19.0,77.4,3.15,63.0,2020-09-22
+STU10367,Electrical Engineering,Undergraduate,30.0,79.9,3.01,91.0,2021-12-16
+STU10368,Psychology,Postgraduate,19.0,87.3,3.69,67.0,2020-12-18
+STU10369,Mathematics & Statistics,Postgraduate,27.0,78.1,3.65,63.0,2022-02-19
+STU10370,Computer Science,Postgraduate,22.0,95.0,3.96,107.0,2021-08-14
+STU10371,Mathematics & Statistics,Postgraduate,30.0,52.9,2.63,33.0,2020-11-18
+STU10372,Economics,Doctoral,19.0,67.5,3.22,79.0,2022-05-02
+STU10373,Mathematics & Statistics,Postgraduate,23.0,81.2,3.28,105.0,2022-06-23
+STU10374,Mathematics & Statistics,Undergraduate,19.0,77.2,3.2,30.0,2021-05-21
+STU10375,Mathematics & Statistics,Undergraduate,27.0,67.7,2.87,31.0,2022-04-07
+STU10376,Computer Science,Undergraduate,30.0,63.9,2.81,92.0,2022-01-19
+STU10377,Biology,Doctoral,30.0,63.3,3.4,86.0,2021-04-12
+STU10378,Psychology,Doctoral,28.0,63.6,3.8,93.0,2022-02-06
+STU10379,Electrical Engineering,Doctoral,23.0,80.9,3.5,31.0,2021-11-25
+STU10380,Computer Science,Postgraduate,25.0,64.7,3.34,92.0,2021-08-07
+STU10381,Electrical Engineering,Doctoral,18.0,68.1,3.26,57.0,2022-02-02
+STU10382,Computer Science,Postgraduate,25.0,100.0,3.78,69.0,2020-09-10
+STU10383,Computer Science,Postgraduate,22.0,88.8,3.42,21.0,2022-06-23
+STU10384,Computer Science,Doctoral,27.0,74.6,3.79,76.0,2021-09-29
+STU10385,Biology,Doctoral,26.0,67.5,3.67,113.0,2020-10-13
+STU10386,Biology,Doctoral,28.0,83.5,3.36,36.0,2021-07-27
+STU10387,Economics,Postgraduate,26.0,82.6,3.73,31.0,2020-03-11
+STU10388,Biology,Undergraduate,30.0,82.5,3.09,119.0,2021-08-18
+STU10389,Psychology,Undergraduate,26.0,66.3,3.13,94.0,2021-02-24
+STU10390,Computer Science,Undergraduate,29.0,74.1,3.49,68.0,2021-11-24
+STU10391,Economics,Doctoral,27.0,77.1,3.05,32.0,2021-08-09
+STU10392,Electrical Engineering,Postgraduate,24.0,79.6,3.59,64.0,2021-08-13
+STU10393,Psychology,Doctoral,18.0,81.7,3.74,113.0,2022-09-06
+STU10394,Psychology,Postgraduate,19.0,85.0,3.64,54.0,2020-06-12
+STU10395,Economics,Doctoral,24.0,74.2,2.92,48.0,2021-05-17
+STU10396,Psychology,Doctoral,27.0,80.2,3.5,31.0,2021-08-08
+STU10397,Computer Science,Doctoral,28.0,78.3,3.09,30.0,2021-08-25
+STU10398,Electrical Engineering,Doctoral,29.0,62.0,3.38,96.0,2021-07-10
+STU10399,Mathematics & Statistics,Doctoral,29.0,74.5,3.51,22.0,2021-07-15
+STU10400,Economics,Postgraduate,28.0,75.3,3.36,113.0,2021-03-08

@@ -1,0 +1,1072 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}</style><style>:root{color-scheme:light dark;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}}:root[data-theme="dark"]{color-scheme:dark;--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}:root[data-theme="light"]{color-scheme:light}@media print{:root,:root[data-theme="dark"]{color-scheme:light;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}}body{background:var(--md-bg);color:var(--md-text);max-width:720px;margin:0 auto;padding:32px;display:flex;flex-direction:column;gap:10px;font:14px/1.55 -apple-system,BlinkMacSystemFont,'SF Pro','Segoe UI',sans-serif;overflow-wrap:break-word}body>:first-child{margin-top:0}h1,h2,h3,h4,h5,h6{margin:6px 0 0;line-height:1.25;font-weight:600;text-wrap:balance}h1{font-size:1.35em}h2{font-size:1.15em;color:var(--md-muted)}h3,h4,h5,h6{font-size:1em}p,ul,ol,blockquote,table,pre,hr{margin:0}strong{font-weight:600}a{color:var(--md-link);text-decoration:none}a:hover{text-decoration:underline}ul,ol{display:flex;flex-direction:column;gap:6px;padding-left:22px}ul{list-style:disc}ol{list-style:decimal}:is(li,td,th)>*+:is(p,ul,ol,blockquote){margin-top:6px}blockquote{display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--md-rule);padding-left:10px;color:var(--md-muted)}:not(pre)>code{background:var(--md-fill);padding:1px 3px;border-radius:4px;font:.92em 'SF Mono',ui-monospace,Menlo,Consolas,monospace}a>code{background:none;color:inherit}pre{background:var(--md-fill);padding:10px 12px;border-radius:6px;overflow-x:auto;font:12px/1.5 'SF Mono',ui-monospace,Menlo,Consolas,monospace;margin-block:4px}pre code{background:none;padding:0;font:inherit}table{width:100%;border-collapse:separate;border-spacing:2px;font:inherit}th,td{padding:6px 8px;border-radius:3px;text-align:left;vertical-align:top}th{background:var(--md-fill-strong);font-weight:600}td{background:var(--md-fill)}:is(th,td) :not(pre)>code{background:transparent}hr{border:0;border-top:1px solid var(--md-rule-strong);margin-block:10px}img{max-width:100%;height:auto;border-radius:4px}</style>
+</head><body>
+<h1>University Data Portal (Django): Detailed Project Plan</h1>
+<p><strong>STA308 Final Project | Upload XLSX → automatic cleaning → live charts (Chart.js, optional Superset)</strong></p>
+<blockquote>
+<p><strong>Assumptions (edit if wrong):</strong> 12-week timeline, solo or team of 2-3, Python 3.11 + Django 5.x, PostgreSQL (SQLite for early dev), Chart.js as the primary charting layer, Superset as an optional stretch. The &quot;university data&quot; is student/course/grade-style spreadsheets. Because this is a statistics course, the plan emphasizes defensible statistical cleaning and a data-quality report, not just a working website.</p>
+</blockquote>
+<hr>
+<h2>1. Project Definition</h2>
+<h3>1.1 Problem Statement</h3>
+<p>University staff and students keep data in messy Excel files: inconsistent headers, mixed date formats, duplicate rows, missing values, typos in categories. Cleaning is manual, undocumented, and not reproducible, and turning the result into charts is a second manual step.</p>
+<h3>1.2 Goal</h3>
+<p>Build a Django web portal where an authenticated user uploads an XLSX file, the backend validates and cleans it automatically using documented rules, produces a <strong>data-quality report</strong> of everything it changed, and renders interactive, live-updating charts from the cleaned data.</p>
+<h3>1.3 Objectives (SMART)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Objective</th>
+<th>Measure of success</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Secure upload of .xlsx files</td>
+<td>Rejects invalid/oversized/malicious files in 100% of test cases</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Automatic cleaning pipeline with 10+ rule types</td>
+<td>Every change logged; cleaning reproducible from the log</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>Data-quality report per upload</td>
+<td>Before/after stats: rows, missing %, duplicates, outliers</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Interactive charts (4+ chart types)</td>
+<td>Chart.js dashboard renders from a JSON API in under 3 s for 50k rows</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>&quot;Live&quot; behavior</td>
+<td>Dashboard updates without page reload when processing finishes or new data arrives</td>
+</tr>
+<tr>
+<td>O6</td>
+<td>User accounts and data isolation</td>
+<td>Users only see their own uploads (verified by tests)</td>
+</tr>
+<tr>
+<td>O7</td>
+<td>Tested, deployed, documented</td>
+<td>70%+ coverage on cleaning code; public URL or Docker setup; full report</td>
+</tr>
+</tbody>
+</table>
+<h3>1.4 Research / Evaluation Questions (important for a stats course)</h3>
+<ul>
+<li><strong>RQ1:</strong> How accurate is the automated cleaning compared with manual cleaning? (Compare against a hand-cleaned &quot;gold&quot; file.)</li>
+<li><strong>RQ2:</strong> How does each cleaning rule affect summary statistics (mean, SD, correlation) of the dataset?</li>
+<li><strong>RQ3:</strong> How much time does the portal save versus manual cleaning in Excel? (Small user study, 5+ people.)</li>
+<li><strong>RQ4:</strong> How well does it scale (rows vs processing time)?</li>
+</ul>
+<h3>1.5 Scope</h3>
+<p><strong>In scope:</strong> upload, validation, cleaning, quality report, dashboards, user accounts, export of cleaned data (CSV/XLSX), tests, deployment.
+<strong>Out of scope:</strong> real university database integration, single sign-on, machine-learning predictions, CSV/Google Sheets import (listed as extensions).</p>
+<h3>1.6 What &quot;live charts&quot; means here (define it early so graders agree)</h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Behavior</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td>Charts load from a JSON API and respond to filters without reloading the page</td>
+<td>Must</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>Page shows processing progress and auto-renders charts when cleaning finishes (polling or Server-Sent Events)</td>
+<td>Must</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>A dashboard auto-refreshes when a new file is uploaded to the same dataset (WebSockets via Django Channels or periodic polling)</td>
+<td>Should</td>
+</tr>
+</tbody>
+</table>
+<p>State in your report which level you achieved.</p>
+<hr>
+<h2>2. Technology Decisions (with alternatives)</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+<th>Alternative</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend</td>
+<td>Django 5.x</td>
+<td>Flask/FastAPI</td>
+<td>Course topic requires Django; built-in auth, ORM, admin</td>
+</tr>
+<tr>
+<td>Data cleaning</td>
+<td>pandas + openpyxl</td>
+<td>Polars, raw openpyxl</td>
+<td>pandas is standard and testable</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>PostgreSQL (SQLite in early dev)</td>
+<td>MySQL</td>
+<td>Superset-friendly; JSONB support</td>
+</tr>
+<tr>
+<td>Async jobs</td>
+<td>Celery + Redis (or Django-Q2 / threading for MVP)</td>
+<td>Synchronous</td>
+<td>Large files block requests; see 3.3</td>
+</tr>
+<tr>
+<td>Charts (primary)</td>
+<td>Chart.js 4</td>
+<td>Plotly.js, ECharts</td>
+<td>Lightweight, simple, matches topic wording</td>
+</tr>
+<tr>
+<td>Charts (optional)</td>
+<td>Apache Superset via embedded dashboards</td>
+<td>Metabase</td>
+<td>Heavy; see Section 8</td>
+</tr>
+<tr>
+<td>Front end</td>
+<td>Django templates + Bootstrap 5 + HTMX/vanilla JS</td>
+<td>React</td>
+<td>Fewer moving parts</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Django REST Framework (DRF)</td>
+<td>Plain JsonResponse</td>
+<td>Serializers, permissions, browsable API</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td>pytest-django, factory_boy</td>
+<td>Django TestCase</td>
+<td>Cleaner fixtures</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>Docker Compose; Render/Railway/PythonAnywhere</td>
+<td>VPS</td>
+<td>Reproducible</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Honest note on Superset:</strong> Superset is a separate, heavy application (own database, Docker stack, own users). It is not a library you import into Django. Integrating it means: running it alongside Django, pointing it at the same PostgreSQL where cleaned data is stored, and embedding dashboards in your pages (embedded dashboards + guest tokens). Exact configuration steps change between versions, so verify against the current Superset docs before committing. <strong>Recommendation: build everything with Chart.js first (core deliverable), and treat Superset as an optional Week 10-11 add-on only if you're ahead.</strong></p>
+<hr>
+<h2>3. System Architecture</h2>
+<h3>3.1 High-Level Flow</h3>
+<pre><code>Browser ──upload .xlsx──► Django view
+                              │ 1. validate file (type, size, structure)
+                              │ 2. save raw file (read-only), create Upload row (status=QUEUED)
+                              ▼
+                       Background worker (Celery)
+                              │ 3. parse sheets → DataFrame
+                              │ 4. profile raw data
+                              │ 5. apply cleaning rules → CleaningLog
+                              │ 6. profile clean data → QualityReport
+                              │ 7. save cleaned data (DB table / Parquet) status=DONE
+                              ▼
+Browser ◄── polls /api/uploads/&lt;id&gt;/status ── then loads /api/uploads/&lt;id&gt;/chart-data
+   │
+   └── Chart.js renders charts; filters call the API again
+        (optional) Superset embedded dashboard reads same DB
+</code></pre>
+<h3>3.2 Django Project Structure</h3>
+<pre><code>portal/
+├── manage.py
+├── config/                 settings/{base,dev,prod}.py, urls.py, celery.py
+├── apps/
+│   ├── accounts/           registration, login, profile
+│   ├── uploads/            Upload model, forms, views, validators, storage
+│   ├── cleaning/           pipeline package (NO Django imports in core logic)
+│   │   ├── pipeline.py     orchestrates steps
+│   │   ├── rules/          one module per rule (headers.py, dates.py, dupes.py, ...)
+│   │   ├── profiling.py    before/after statistics
+│   │   └── types.py        dataclasses for results
+│   ├── dashboards/         API endpoints, chart configs, templates
+│   └── reports/            quality report rendering, exports
+├── templates/ static/
+├── tests/                  unit, integration, fixtures/ (sample xlsx files)
+├── docker-compose.yml, Dockerfile, requirements.txt, README.md
+└── docs/                   architecture diagram, data dictionary, rule catalog
+</code></pre>
+<p><strong>Key design rule:</strong> <code>cleaning/</code> is pure Python/pandas so it can be unit-tested without Django and described cleanly in the report.</p>
+<h3>3.3 Sync vs Async Processing</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Pros</th>
+<th>Cons</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synchronous in request</td>
+<td>Simplest</td>
+<td>Request times out for big files; poor UX</td>
+<td>MVP weeks 1-6 only</td>
+</tr>
+<tr>
+<td>Threading / Django-Q2</td>
+<td>Easy, no Redis</td>
+<td>Less robust</td>
+<td>Good fallback</td>
+</tr>
+<tr>
+<td>Celery + Redis</td>
+<td>Standard, retries, progress</td>
+<td>More setup</td>
+<td>Target for final</td>
+</tr>
+</tbody>
+</table>
+<p>Plan: build synchronous first, then move the same pipeline function into a Celery task (the function signature doesn't change).</p>
+<h3>3.4 Data Model (ER summary)</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Key fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>User</code></td>
+<td>Django default (+ profile: role, department)</td>
+</tr>
+<tr>
+<td><code>Upload</code></td>
+<td>owner FK, original_filename, stored_path, sha256, size_bytes, status (QUEUED/PROCESSING/DONE/FAILED), error_message, created_at, finished_at, row_count_raw, row_count_clean, progress_pct</td>
+</tr>
+<tr>
+<td><code>Sheet</code></td>
+<td>upload FK, name, header_row, n_rows, n_cols</td>
+</tr>
+<tr>
+<td><code>ColumnProfile</code></td>
+<td>sheet FK, name_raw, name_clean, inferred_type, role (id/category/numeric/date/text), missing_pct_before/after, n_unique, min/max/mean/sd/skew</td>
+</tr>
+<tr>
+<td><code>CleaningAction</code></td>
+<td>upload FK, sheet, rule_id, column, row_ref, before_value, after_value, reason, severity</td>
+</tr>
+<tr>
+<td><code>QualityReport</code></td>
+<td>upload FK, JSON summary (before/after metrics, quality score)</td>
+</tr>
+<tr>
+<td><code>CleanedDataset</code></td>
+<td>upload FK, storage (table name or Parquet path), schema JSON</td>
+</tr>
+<tr>
+<td><code>DashboardConfig</code></td>
+<td>owner, upload FK, chart definitions JSON (type, x, y, aggregation, filters)</td>
+</tr>
+</tbody>
+</table>
+<p>Storing cleaned data: <strong>Option A</strong> one generic JSONB table (flexible, slower to chart); <strong>Option B</strong> create a real table per upload (fast, Superset-friendly, needs careful identifier sanitizing); <strong>Option C</strong> Parquet/CSV file per upload read with pandas (simplest). Recommended: <strong>C for the MVP</strong>, <strong>B only if Superset is attempted</strong>.</p>
+<hr>
+<h2>4. The Cleaning Pipeline (core of the project)</h2>
+<h3>4.1 Pipeline Stages</h3>
+<ol>
+<li><strong>Ingest:</strong> read every sheet with <code>openpyxl</code>/<code>pandas</code> (<code>read_only=True</code> for big files); skip empty sheets; record merged cells and hidden rows/columns.</li>
+<li><strong>Structure detection:</strong> find the real header row (first row with mostly non-empty, mostly string cells), drop title/notes rows above it, drop trailing total/blank rows.</li>
+<li><strong>Header normalization:</strong> trim, lowercase, replace spaces/symbols with underscores, deduplicate (<code>score</code>, <code>score_2</code>), fill blank headers (<code>column_3</code>).</li>
+<li><strong>Type inference:</strong> per column, try numeric → date → boolean → category → text using a majority-vote threshold (e.g., 90% of non-null values parse).</li>
+<li><strong>Value standardization:</strong> trim whitespace, normalize case for categories, unify null tokens (<code>N/A</code>, <code>NA</code>, <code>-</code>, <code>null</code>, empty string), fix numeric strings (<code>&quot;1,234&quot;</code>, <code>&quot;85%&quot;</code>, <code>&quot;A+&quot;</code> handling by column type).</li>
+<li><strong>Date handling:</strong> parse mixed formats; flag ambiguous day/month (<code>03/04/2024</code>) and report the assumption; convert Excel serial numbers.</li>
+<li><strong>Duplicates:</strong> exact-row duplicates removed (keep first); optional key-based duplicates (e.g., same student_id + course) flagged, not auto-deleted.</li>
+<li><strong>Missing values:</strong> report per column; apply strategy by type (see 4.3).</li>
+<li><strong>Outliers and invalid values:</strong> range checks (grade 0-100, age 15-100), IQR / modified z-score flagging (flag by default, never silently delete).</li>
+<li><strong>Categorical typo repair:</strong> fuzzy matching within a column (e.g., <code>rapidfuzz</code> ratio ≥ 90 maps &quot;Computr Science&quot; → &quot;Computer Science&quot;); always logged and reversible.</li>
+<li><strong>Integrity checks:</strong> ID uniqueness, referential checks if multiple sheets share keys, cross-column logic (end date after start date).</li>
+<li><strong>Profile and report:</strong> compute before/after statistics and a quality score.</li>
+<li><strong>Persist:</strong> save cleaned data, actions, report, and mark status DONE.</li>
+</ol>
+<h3>4.2 Rule Catalog (document each in <code>docs/rule_catalog.md</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Name</th>
+<th>Action</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R01</td>
+<td>Header row detection</td>
+<td>Re-index header</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R02</td>
+<td>Header normalization</td>
+<td>Rename columns</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R03</td>
+<td>Drop empty rows/cols</td>
+<td>Remove</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R04</td>
+<td>Whitespace trim</td>
+<td>Modify</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R05</td>
+<td>Null token unification</td>
+<td>Modify</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R06</td>
+<td>Numeric coercion</td>
+<td>Modify; failures → NaN + log</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R07</td>
+<td>Date parsing</td>
+<td>Modify + ambiguity flag</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R08</td>
+<td>Exact duplicate removal</td>
+<td>Remove</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R09</td>
+<td>Category case/typo fix</td>
+<td>Modify</td>
+<td>On (threshold adjustable)</td>
+</tr>
+<tr>
+<td>R10</td>
+<td>Range validation</td>
+<td>Flag</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R11</td>
+<td>Outlier flagging</td>
+<td>Flag only</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R12</td>
+<td>Missing-value handling</td>
+<td>Impute or flag</td>
+<td>Flag only; imputation opt-in</td>
+</tr>
+<tr>
+<td>R13</td>
+<td>Key duplicate detection</td>
+<td>Flag</td>
+<td>On</td>
+</tr>
+<tr>
+<td>R14</td>
+<td>Cross-column consistency</td>
+<td>Flag</td>
+<td>On</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Principle:</strong> destructive actions (removing rows) are limited to blank rows and exact duplicates; everything else modifies with a log entry or flags. The original file is never altered, and the user can download both versions.</p>
+<h3>4.3 Missing Value Strategy (tie to statistics)</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Default</th>
+<th>Justification to put in report</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Column &gt; 50% missing</td>
+<td>Flag, suggest dropping</td>
+<td>Too little information</td>
+</tr>
+<tr>
+<td>Numeric, &lt; 5% missing</td>
+<td>Leave blank (default) or median impute (opt-in)</td>
+<td>Median is robust to outliers</td>
+</tr>
+<tr>
+<td>Categorical missing</td>
+<td>Fill with &quot;Unknown&quot; (opt-in)</td>
+<td>Preserves rows</td>
+</tr>
+<tr>
+<td>ID/key missing</td>
+<td>Flag row as invalid</td>
+<td>Cannot join/identify</td>
+</tr>
+<tr>
+<td>Discuss MCAR/MAR/MNAR briefly and why blanket mean imputation can bias variance estimates.</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>4.4 Data Quality Report Contents</h3>
+<ul>
+<li>Summary: rows/columns before and after, rows removed, cells modified, flags raised</li>
+<li>Per-column table: inferred type, missing % (before → after), unique count, min/max/mean/SD/skew, outlier count</li>
+<li>Action log (filterable): rule, column, before → after, reason</li>
+<li>Distribution comparison (histograms before vs after for key numeric columns)</li>
+<li><strong>Quality score (0-100):</strong> e.g., weighted average of completeness, validity, uniqueness, consistency. Define the formula explicitly and justify the weights.</li>
+<li>Downloadable as HTML/PDF/XLSX (extra sheet &quot;Cleaning Log&quot;)</li>
+</ul>
+<h3>4.5 Configurable Options (per upload)</h3>
+<p>Fuzzy-match threshold, imputation on/off and method, outlier method (IQR vs z-score), valid ranges per column, which columns are keys. Provide sensible defaults and a &quot;Re-run with options&quot; button.</p>
+<h3>4.6 Performance</h3>
+<p>Use vectorized pandas, avoid row loops, read with <code>usecols</code>/<code>dtype</code> where possible, cap at e.g. 100k rows / 20 MB for the course project, and benchmark 1k, 10k, 50k, 100k rows (feeds RQ4).</p>
+<hr>
+<h2>5. Charts and Dashboards</h2>
+<h3>5.1 Chart Types and When Offered</h3>
+<table>
+<thead>
+<tr>
+<th>Chart</th>
+<th>Column types needed</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bar (counts / mean by category)</td>
+<td>category (+ numeric)</td>
+<td>Compare groups</td>
+</tr>
+<tr>
+<td>Histogram</td>
+<td>numeric</td>
+<td>Distribution</td>
+</tr>
+<tr>
+<td>Line</td>
+<td>date + numeric</td>
+<td>Trends</td>
+</tr>
+<tr>
+<td>Pie/doughnut</td>
+<td>category (≤ 8 levels)</td>
+<td>Composition</td>
+</tr>
+<tr>
+<td>Scatter</td>
+<td>numeric × numeric</td>
+<td>Relationship (+ optional trendline and r)</td>
+</tr>
+<tr>
+<td>Box plot (via plugin) or summary table</td>
+<td>numeric by category</td>
+<td>Spread and outliers</td>
+</tr>
+<tr>
+<td>Heatmap/correlation matrix</td>
+<td>multiple numeric</td>
+<td>Associations</td>
+</tr>
+</tbody>
+</table>
+<p>The system should <strong>auto-suggest</strong> charts from <code>ColumnProfile</code> roles (e.g., a date column + numeric column → line chart) and let the user customize.</p>
+<h3>5.2 API Design (DRF)</h3>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/uploads/</code></td>
+<td>POST</td>
+<td>Upload file</td>
+</tr>
+<tr>
+<td><code>/api/uploads/</code></td>
+<td>GET</td>
+<td>List own uploads</td>
+</tr>
+<tr>
+<td><code>/api/uploads/&lt;id&gt;/status/</code></td>
+<td>GET</td>
+<td>status, progress_pct</td>
+</tr>
+<tr>
+<td><code>/api/uploads/&lt;id&gt;/report/</code></td>
+<td>GET</td>
+<td>Quality report JSON</td>
+</tr>
+<tr>
+<td><code>/api/uploads/&lt;id&gt;/columns/</code></td>
+<td>GET</td>
+<td>Column profiles</td>
+</tr>
+<tr>
+<td><code>/api/uploads/&lt;id&gt;/chart-data/?type=bar&amp;x=dept&amp;y=gpa&amp;agg=mean&amp;filters=...</code></td>
+<td>GET</td>
+<td>Aggregated data for a chart</td>
+</tr>
+<tr>
+<td><code>/api/uploads/&lt;id&gt;/download/?version=clean</code></td>
+<td>GET</td>
+<td>Cleaned file</td>
+</tr>
+<tr>
+<td><code>/api/dashboards/</code></td>
+<td>CRUD</td>
+<td>Saved dashboard configs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rules:</strong> aggregate on the server (never send 100k raw rows to the browser), validate column names against the dataset's schema (prevents injection), paginate tables, cache repeated aggregations.</p>
+<h3>5.3 Live Update Mechanisms</h3>
+<ul>
+<li><strong>L2 (must):</strong> after upload, the page polls <code>/status/</code> every 1-2 s, shows a progress bar and stage name (&quot;Cleaning dates…&quot;), and calls <code>renderDashboard()</code> when status = DONE. Alternative: Server-Sent Events.</li>
+<li><strong>L3 (should):</strong> Django Channels + Redis pushes a message to a per-dataset group when a new version finishes; the dashboard re-fetches. If Channels is too heavy, use 10-second polling for the dashboard and say so honestly.</li>
+<li>Filters (dropdowns, date range, sliders) trigger new API calls and chart <code>update()</code> with animations; debounce input.</li>
+</ul>
+<h3>5.4 Dashboard UX</h3>
+<p>Grid of chart cards (add/remove/resize), global filter bar, KPI tiles (rows, columns, quality score, missing %), &quot;Save dashboard,&quot; &quot;Export chart as PNG,&quot; and &quot;Download data.&quot; Use colorblind-safe palettes, readable axis labels, titles with units, and tooltips.</p>
+<h3>5.5 Superset Integration (optional, Weeks 10-11)</h3>
+<ol>
+<li>Run Superset via Docker Compose next to Django and PostgreSQL.</li>
+<li>Store cleaned data in per-upload tables in a dedicated schema (<code>clean_data</code>); register that database in Superset.</li>
+<li>Create datasets/charts/dashboards in Superset; enable embedding and request <strong>guest tokens</strong> from your Django backend to embed in an <code>&lt;iframe&gt;</code>/Embedded SDK.</li>
+<li>Handle row-level security so users only see their data.
+Risks: heavy RAM use, configuration friction, version differences. Mitigation: timebox to 4-5 days; if it's not working by then, drop it and document the attempt in the report as &quot;future work.&quot;</li>
+</ol>
+<hr>
+<h2>6. Security and Privacy (high-value section for grading)</h2>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Malicious file disguised as .xlsx</td>
+<td>Check extension <strong>and</strong> magic bytes/zip structure; open only with openpyxl/pandas; never execute content</td>
+</tr>
+<tr>
+<td>Zip bomb / huge file</td>
+<td>Max upload size (e.g., 20 MB), cap uncompressed size and rows/columns, timeout on processing</td>
+</tr>
+<tr>
+<td>XLSM macros / external links</td>
+<td>Accept .xlsx only; ignore formulas' external references; read values only (<code>data_only=True</code>)</td>
+</tr>
+<tr>
+<td>Formula injection on export (<code>=CMD(...)</code>)</td>
+<td>Prefix cells starting with <code>= + - @</code> with <code>'</code> when writing exports</td>
+</tr>
+<tr>
+<td>Path traversal / filename tricks</td>
+<td>Store with random UUID names, never use user filename in paths</td>
+</tr>
+<tr>
+<td>IDOR (accessing others' uploads)</td>
+<td>Queryset filtered by <code>owner=request.user</code> on every view/API; tests for it</td>
+</tr>
+<tr>
+<td>CSRF/XSS</td>
+<td>Django defaults on; escape all user-derived text (column names, cell values) in templates and chart labels</td>
+</tr>
+<tr>
+<td>SQL injection</td>
+<td>ORM only; whitelist column names; if per-upload tables are used, sanitize identifiers</td>
+</tr>
+<tr>
+<td>Sensitive student data</td>
+<td>Warn users not to upload real personal data; auth required; HTTPS; data retention policy (auto-delete after N days); no logs of cell values</td>
+</tr>
+<tr>
+<td>Brute force</td>
+<td>Rate limiting on login/upload (django-axes or throttling in DRF)</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>Environment variables, <code>.env</code> not committed, <code>DEBUG=False</code> in prod</td>
+</tr>
+</tbody>
+</table>
+<p>Run <code>python manage.py check --deploy</code> and fix warnings.</p>
+<hr>
+<h2>7. Testing Strategy</h2>
+<h3>7.1 Test Data Set (create in Week 2, reuse everywhere)</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clean_baseline.xlsx</code></td>
+<td>Already clean; pipeline should change nothing</td>
+</tr>
+<tr>
+<td><code>messy_headers.xlsx</code></td>
+<td>Title rows, blank header cells, duplicate headers</td>
+</tr>
+<tr>
+<td><code>mixed_dates.xlsx</code></td>
+<td>5 date formats, Excel serials, ambiguous dates</td>
+</tr>
+<tr>
+<td><code>typos_categories.xlsx</code></td>
+<td>Department/program misspellings</td>
+</tr>
+<tr>
+<td><code>missing_heavy.xlsx</code></td>
+<td>5%, 30%, 60% missing columns</td>
+</tr>
+<tr>
+<td><code>outliers_invalid.xlsx</code></td>
+<td>Grades of -5, 150, 999</td>
+</tr>
+<tr>
+<td><code>duplicates.xlsx</code></td>
+<td>Exact and key duplicates</td>
+</tr>
+<tr>
+<td><code>multi_sheet.xlsx</code></td>
+<td>Several sheets with related keys</td>
+</tr>
+<tr>
+<td><code>large_100k.xlsx</code></td>
+<td>Performance test</td>
+</tr>
+<tr>
+<td><code>malicious_*.xlsx</code></td>
+<td>Fake extension, zip bomb sample, formulas with <code>=CMD</code></td>
+</tr>
+<tr>
+<td><code>gold_clean.xlsx</code></td>
+<td>Hand-cleaned version of a messy file for RQ1</td>
+</tr>
+</tbody>
+</table>
+<p>Generate messy files by <strong>injecting known errors into a clean synthetic file</strong> with a script (you then know the exact ground truth and can compute precision/recall of the cleaning).</p>
+<h3>7.2 Test Types</h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit</td>
+<td>Each rule: input DataFrame → expected output + log entries</td>
+</tr>
+<tr>
+<td>Property-based (hypothesis)</td>
+<td>Cleaning is idempotent (clean(clean(x)) == clean(x)); row count never increases</td>
+</tr>
+<tr>
+<td>Integration</td>
+<td>Upload → status DONE → report present → chart-data endpoint returns correct aggregates</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>Upload non-xlsx, oversized file, other user's upload ID returns 404/403</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Status codes, schema, filters, invalid columns</td>
+</tr>
+<tr>
+<td>UI/manual</td>
+<td>Chrome/Firefox, mobile width, accessibility check (Lighthouse)</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Time vs rows (1k → 100k), memory</td>
+</tr>
+</tbody>
+</table>
+<p>Target: 70%+ coverage overall, 90%+ on <code>cleaning/</code>. Use GitHub Actions to run tests on every push.</p>
+<h3>7.3 Evaluation of Cleaning Accuracy (RQ1)</h3>
+<p>With injected errors: compute for each rule <strong>precision</strong> (fixes that were correct / fixes made) and <strong>recall</strong> (injected errors found / injected errors). Report in a table. Compare cell-level agreement between pipeline output and <code>gold_clean.xlsx</code>.</p>
+<h3>7.4 Usability Study (RQ3)</h3>
+<p>5-8 participants. Task: clean a provided messy file and make 3 charts in (a) Excel and (b) your portal. Record time, errors, and a SUS (System Usability Scale) questionnaire. Report mean times, SUS score, and a paired comparison (paired t-test or Wilcoxon with justification, noting the small sample).</p>
+<hr>
+<h2>8. Statistical Components (to align with STA308)</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Statistical content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Column profiling</td>
+<td>Mean, median, SD, IQR, skewness, kurtosis, missing %</td>
+</tr>
+<tr>
+<td>Outlier detection</td>
+<td>IQR rule (1.5×), modified z-score (median/MAD &gt; 3.5), compare</td>
+</tr>
+<tr>
+<td>Normality hint</td>
+<td>Shapiro-Wilk on samples ≤ 5000; suggests whether mean or median is more suitable</td>
+</tr>
+<tr>
+<td>Correlation view</td>
+<td>Pearson and Spearman matrix with p-values; caution about multiple testing</td>
+</tr>
+<tr>
+<td>Imputation impact</td>
+<td>Show how mean/SD/correlation shift before vs after imputation</td>
+</tr>
+<tr>
+<td>Group comparison (optional)</td>
+<td>One-way ANOVA or Kruskal-Wallis between categories, with effect size</td>
+</tr>
+<tr>
+<td>Quality score</td>
+<td>Defined composite index with documented weights</td>
+</tr>
+<tr>
+<td>Cleaning evaluation</td>
+<td>Precision/recall, confidence intervals via bootstrap</td>
+</tr>
+<tr>
+<td>Scaling study</td>
+<td>Regression of processing time on rows; report R² and fit (linear?)</td>
+</tr>
+</tbody>
+</table>
+<p>Check your STA308 syllabus and prioritize the techniques your lecturer taught.</p>
+<hr>
+<h2>9. Detailed Timeline (12 Weeks)</h2>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Tasks</th>
+<th>Deliverables</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Confirm scope and rubric with lecturer; literature scan (data quality dimensions, ETL, dashboards); repo, venv, Docker skeleton; wireframes</td>
+<td>Proposal (2 pages), repo, wireframes</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Django project setup; auth; Upload model; basic upload form; <strong>create the messy test-file generator and fixtures</strong></td>
+<td>Working upload, test files</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Upload validation and security basics; file storage; admin; CI with tests</td>
+<td>Secure upload, CI green</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Cleaning core: ingest, header detection, normalization, whitespace, nulls (R01-R05) with unit tests</td>
+<td>Pipeline v0.1</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Types, numeric/date parsing, duplicates (R06-R08)</td>
+<td>Pipeline v0.2</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Categories/typos, ranges, outliers, missing handling, consistency (R09-R14); cleaning log model</td>
+<td>Pipeline v1.0 + rule catalog</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Profiling and quality report; report page; cleaned file download</td>
+<td>Report page</td>
+</tr>
+<tr>
+<td>8</td>
+<td>DRF API; aggregation endpoints; first Chart.js charts (bar, histogram, line)</td>
+<td>Dashboard v1</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Remaining charts, filters, auto-suggested charts, saved dashboards; async with Celery; progress bar and live updates</td>
+<td>Dashboard v2, L2 live</td>
+</tr>
+<tr>
+<td>10</td>
+<td>L3 live updates (Channels or polling); statistical extras (correlation, normality); <strong>optional Superset spike (timeboxed)</strong>; security hardening</td>
+<td>Feature freeze</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Evaluation: cleaning accuracy, performance benchmarks, usability study; bug fixes; deploy</td>
+<td>Results data, live URL</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Report, slides, demo video, final regression run, tag <code>v1.0-submission</code>, rehearse</td>
+<td>Final submission</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Buffer:</strong> Week 11-12 absorb slips. <strong>Cut order if behind:</strong> Superset, L3 live updates, saved dashboards, PDF export, group-comparison stats. <strong>Never cut:</strong> upload security, cleaning log, quality report, tests, evaluation.</p>
+<h3>Weekly Rhythm</h3>
+<p>Monday plan (1 hr), Tue-Thu build, Friday test + commit + update task board + 15-minute self-review against milestones. Keep a development journal (useful for the report).</p>
+<hr>
+<h2>10. Roles (if in a group)</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Owns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend lead</td>
+<td>Django apps, models, API, Celery, security</td>
+</tr>
+<tr>
+<td>Data/cleaning lead</td>
+<td>Pipeline rules, profiling, statistical evaluation, test data generator</td>
+</tr>
+<tr>
+<td>Front-end/visualization lead</td>
+<td>Templates, Chart.js dashboards, UX, live updates</td>
+</tr>
+<tr>
+<td>QA/documentation lead</td>
+<td>Tests, CI, user study, report assembly, demo</td>
+</tr>
+<tr>
+<td>Solo: follow the same order; treat the roles as checklists and do the cleaning module before the UI polish.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>11. Risk Register</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cleaning scope balloons (too many rules)</td>
+<td>High</td>
+<td>High</td>
+<td>Ship R01-R08 first; cap rule list; freeze in Week 6</td>
+</tr>
+<tr>
+<td>Superset integration eats time</td>
+<td>High</td>
+<td>Medium</td>
+<td>Optional, timeboxed to 4-5 days, Chart.js is the core</td>
+</tr>
+<tr>
+<td>Excel files in the wild are weirder than test files</td>
+<td>High</td>
+<td>Medium</td>
+<td>Collect 5+ real (non-sensitive) spreadsheets by Week 4; add tests for each failure</td>
+</tr>
+<tr>
+<td>Async/live-update complexity</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Build sync first; polling before WebSockets</td>
+</tr>
+<tr>
+<td>Security issue found late</td>
+<td>Medium</td>
+<td>High</td>
+<td>Security tests from Week 3; checklist review in Week 10</td>
+</tr>
+<tr>
+<td>Large files crash the server</td>
+<td>Medium</td>
+<td>High</td>
+<td>Size/row caps, streaming read, timeouts</td>
+</tr>
+<tr>
+<td>No real data available</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Synthetic university dataset with injected errors (also gives ground truth)</td>
+</tr>
+<tr>
+<td>Deployment surprises</td>
+<td>Medium</td>
+<td>High</td>
+<td>Dockerize in Week 2; deploy a hello-world in Week 4; full deploy in Week 11</td>
+</tr>
+<tr>
+<td>Group member unavailable</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Pair-review code; documented architecture</td>
+</tr>
+<tr>
+<td>Overclaiming (&quot;fully automatic&quot; cleaning)</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Present as rule-based assistant with flags; document known limitations</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>12. Report Outline (20-30 pages)</h2>
+<ol>
+<li><strong>Abstract</strong></li>
+<li><strong>Introduction:</strong> problem, motivation, objectives, RQs</li>
+<li><strong>Related Work:</strong> data-quality dimensions, ETL/data-wrangling tools (OpenRefine, Power Query, pandas-profiling/ydata), dashboard tools</li>
+<li><strong>Requirements and Design:</strong> user stories, architecture diagram, ER diagram, API table, security design</li>
+<li><strong>Data Cleaning Methodology:</strong> pipeline stages, rule catalog, statistical justification (missing data, outlier methods), quality score definition</li>
+<li><strong>Implementation:</strong> Django apps, async processing, charting, live updates, (Superset if done), screenshots</li>
+<li><strong>Evaluation:</strong> test data design, precision/recall table, gold-file agreement, performance benchmarks, usability study (SUS, time comparison with stats), security test results</li>
+<li><strong>Discussion:</strong> answer RQ1-RQ4, what worked, what didn't, effect of cleaning decisions on statistics</li>
+<li><strong>Limitations and Ethics:</strong> heuristics can be wrong, ambiguous dates, privacy, bias from imputation</li>
+<li><strong>Conclusion and Future Work:</strong> CSV/Sheets import, ML-based type inference, collaborative dashboards, institutional SSO</li>
+<li><strong>References, Appendices:</strong> rule catalog, API docs, test list, questionnaire, user manual</li>
+</ol>
+<p><strong>Must-have figures/tables:</strong> architecture diagram, ER diagram, pipeline flowchart, rule catalog, before/after distribution plots, precision/recall table, scaling plot (rows vs time), SUS results, dashboard screenshots.</p>
+<hr>
+<h2>13. Demo and Presentation (10-15 min)</h2>
+<ol>
+<li>Problem: show a truly messy spreadsheet (1 min)</li>
+<li>Architecture in one diagram (1.5 min)</li>
+<li>Live demo: log in → upload messy file → watch progress → quality report → charts → apply a filter → download cleaned file (4 min)</li>
+<li>Show a few specific fixes from the action log (1 min)</li>
+<li>Evaluation results: precision/recall, speed, usability (3 min)</li>
+<li>Security measures and limitations (1.5 min)</li>
+<li>Future work and Q&amp;A (2 min)
+<strong>Prepare:</strong> a pre-tested sample file, a backup demo video, screenshots in the slides, and answers for &quot;why not just use Excel/OpenRefine?&quot;, &quot;how do you know cleaning is correct?&quot;, &quot;what if the data is sensitive?&quot;, &quot;why Chart.js instead of Superset?&quot;</li>
+</ol>
+<hr>
+<h2>14. Quality Checklist (before submission)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> All Must objectives (O1-O7) demonstrably met</li>
+<li><input disabled="" type="checkbox"> Original file never modified; cleaned file and log downloadable</li>
+<li><input disabled="" type="checkbox"> Every cleaning action is logged with before/after and reason</li>
+<li><input disabled="" type="checkbox"> Cleaning is idempotent and covered by tests</li>
+<li><input disabled="" type="checkbox"> Users cannot access others' uploads (tested)</li>
+<li><input disabled="" type="checkbox"> Malicious/oversized/invalid files rejected gracefully</li>
+<li><input disabled="" type="checkbox"> No Python traceback shown to users</li>
+<li><input disabled="" type="checkbox"> Charts have titles, axis labels, units, accessible colors</li>
+<li><input disabled="" type="checkbox"> Fresh clone runs from README (Docker Compose one-liner)</li>
+<li><input disabled="" type="checkbox"> Numbers in the report match what the app produces</li>
+<li><input disabled="" type="checkbox"> Git history is clean; <code>v1.0-submission</code> tagged</li>
+<li><input disabled="" type="checkbox"> Demo video recorded</li>
+</ul>
+<hr>
+<h2>15. Grading Alignment (confirm with your rubric)</h2>
+<table>
+<thead>
+<tr>
+<th>Likely criterion</th>
+<th>Where covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Problem definition and objectives</td>
+<td>Sections 1, 12.2</td>
+</tr>
+<tr>
+<td>Technical complexity (Django, async, API)</td>
+<td>Sections 2-5</td>
+</tr>
+<tr>
+<td>Statistical rigor</td>
+<td>Sections 4.3, 7.3-7.4, 8</td>
+</tr>
+<tr>
+<td>Data cleaning quality</td>
+<td>Section 4</td>
+</tr>
+<tr>
+<td>Visualization / live charts</td>
+<td>Section 5</td>
+</tr>
+<tr>
+<td>Security and ethics</td>
+<td>Section 6, 12.9</td>
+</tr>
+<tr>
+<td>Testing and evaluation</td>
+<td>Section 7</td>
+</tr>
+<tr>
+<td>Documentation and presentation</td>
+<td>Sections 12-13</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>16. Extensions (only if ahead)</h2>
+<ul>
+<li>Column mapping UI (&quot;this column is 'GPA'&quot;) with saved templates per department</li>
+<li>Version history and diff between two uploads</li>
+<li>Anomaly alerts when a new upload deviates from previous ones</li>
+<li>Scheduled re-cleaning via an upload API token</li>
+<li>Export dashboards to PDF</li>
+<li>Natural-language chart creation using the Claude API (clearly label as AI-assisted)</li>
+</ul>
+<hr>
+<h2>17. Immediate Next Steps (this week)</h2>
+<ol>
+<li>Check the STA308 rubric and syllabus; mark which statistical methods are expected.</li>
+<li>Confirm team size, deadline, and whether Superset is <strong>required</strong> or Chart.js is acceptable. Ask your lecturer in writing.</li>
+<li>Create the repo, <code>venv</code>, Django project, and Docker skeleton.</li>
+<li>Write the synthetic university dataset generator with injected errors (this gives you ground truth for evaluation).</li>
+<li>Draft the 2-page proposal from Sections 1 and 9.</li>
+</ol>
+
+</body></html>

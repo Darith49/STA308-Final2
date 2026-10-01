@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Cleaning Pipeline in Progress{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-7 col-lg-6">
+        <div class="card card-custom p-4 p-md-5 text-center shadow-lg border-0">
+            <div class="brand-icon mx-auto mb-4 pulse-icon" style="width: 72px; height: 72px; font-size: 2rem;">
+                <i class="bi bi-gear-wide-connected"></i>
+            </div>
+
+            <h3 class="fw-bold mb-2">Executing Cleaning Pipeline</h3>
+            <p class="text-muted small mb-4">
+                Processing spreadsheet <strong class="text-dark">{{ upload.original_filename }}</strong> according to STA308 rules.
+            </p>
+
+            <!-- Live Progress Bar -->
+            <div class="progress mb-3" style="height: 18px; border-radius: 9999px; background-color: #f1f5f9;">
+                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: {{ upload.progress_pct }}%;" aria-valuenow="{{ upload.progress_pct }}" aria-valuemin="0" aria-valuemax="100">
+                    <span id="progressText" class="fw-bold px-2" style="font-size: 0.75rem;">{{ upload.progress_pct }}%</span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center gap-2 text-muted mb-4">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span id="currentStepText" class="fw-medium text-dark small">{{ upload.current_step }}</span>
+            </div>
+
+            <!-- Stages Summary Card -->
+            <div class="text-start bg-light rounded-3 p-3 border text-muted small">
+                <div class="fw-bold text-dark mb-2"><i class="bi bi-list-check me-1 text-primary"></i> Pipeline Stages Executing:</div>
+                <div class="row g-2">
+                    <div class="col-6"><i class="bi bi-check2 text-success me-1"></i> R01: Header detection</div>
+                    <div class="col-6"><i class="bi bi-check2 text-success me-1"></i> R06: Numeric coercion</div>
+                    <div class="col-6"><i class="bi bi-check2 text-success me-1"></i> R02: Header normalization</div>
+                    <div class="col-6"><i class="bi bi-check2 text-success me-1"></i> R07: Date parsing</div>
+                    <div class="col-6"><i class="bi bi-check2 text-success me-1"></i> R03-R05: Null/whitespace</div>
+                    <div class="col-6"><i class="bi bi-check2 text-success me-1"></i> R08: Exact duplicates</div>
+                    <div class="col-6"><i class="bi bi-check2 text-success me-1"></i> R09: Typo fuzzy repair</div>
+                    <div class="col-6"><i class="bi bi-check2 text-success me-1"></i> R10-R14: Validation & Outliers</div>
+                </div>
+            </div>
+
+            <div id="errorBox" class="alert alert-danger text-start mt-4 d-none small">
+                <strong><i class="bi bi-exclamation-triangle-fill me-1"></i> Error:</strong>
+                <span id="errorMessage"></span>
+                <div class="mt-2">
+                    <a href="{% url 'uploads:list' %}" class="btn btn-sm btn-outline-danger">Back to Datasets</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const uploadId = "{{ upload.id }}";
+    const statusApiUrl = `/api/uploads/${uploadId}/status/`;
+    const reportUrl = "{% url 'uploads:report' upload.id %}";
+
+    function pollStatus() {
+        fetch(statusApiUrl)
+            .then(res => res.json())
+            .then(data => {
+                const pct = data.progress_pct || 0;
+                const status = data.status;
+                const step = data.current_step || "Processing...";
+
+                const progressBar = document.getElementById('progressBar');
+                const progressText = document.getElementById('progressText');
+                const currentStepText = document.getElementById('currentStepText');
+
+                if (progressBar) progressBar.style.width = `${pct}%`;
+                if (progressText) progressText.textContent = `${pct}%`;
+                if (currentStepText) currentStepText.textContent = step;
+
+                if (status === 'DONE') {
+                    if (progressBar) {
+                        progressBar.style.width = '100%';
+                        progressBar.classList.remove('progress-bar-animated');
+                        progressBar.classList.add('bg-success');
+                    }
+                    if (currentStepText) currentStepText.textContent = 'Processing finished! Redirecting to report...';
+                    setTimeout(() => {
+                        window.location.href = reportUrl;
+                    }, 800);
+                } else if (status === 'FAILED') {
+                    document.getElementById('errorBox').classList.remove('d-none');
+                    document.getElementById('errorMessage').textContent = data.error_message || "An unexpected error occurred during processing.";
+                } else {
+                    setTimeout(pollStatus, 1200);
+                }
+            })
+            .catch(err => {
+                console.error("Status polling error:", err);
+                setTimeout(pollStatus, 2500);
+            });
+    }
+
+    // Begin polling immediately
+    pollStatus();
+</script>
+{% endblock %}

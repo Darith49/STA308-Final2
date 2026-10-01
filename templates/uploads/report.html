@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+
+{% block title %}Quality Report - {{ upload.original_filename }}{% endblock %}
+
+{% block content %}
+<!-- Top Header & Action Bar -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 small">
+                <li class="breadcrumb-item"><a href="{% url 'uploads:list' %}" class="text-decoration-none">Datasets</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ upload.original_filename }}</li>
+            </ol>
+        </nav>
+        <h2 class="h3 fw-bold mb-1">Data Quality Report</h2>
+        <div class="text-muted small">
+            Processed via STA308 reproducible cleaning pipeline &bull; Finished: {{ upload.finished_at|date:"M d, Y H:i" }}
+        </div>
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <a href="{% url 'dashboards:view' upload.id %}" class="btn btn-primary-custom d-inline-flex align-items-center gap-2">
+            <i class="bi bi-bar-chart-fill"></i> Open Live Dashboard
+        </a>
+        <div class="dropdown">
+            <button class="btn btn-outline-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-download me-1"></i> Export Data
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li><a class="dropdown-item" href="{% url 'uploads:download' upload.id %}?version=clean_xlsx"><i class="bi bi-file-earmark-excel text-success me-2"></i> Cleaned Excel (.xlsx)</a></li>
+                <li><a class="dropdown-item" href="{% url 'uploads:download' upload.id %}?version=clean_csv"><i class="bi bi-filetype-csv text-primary me-2"></i> Cleaned CSV (.csv)</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-muted" href="{% url 'uploads:download' upload.id %}?version=raw"><i class="bi bi-cloud-arrow-down me-2"></i> Original Raw Spreadsheet</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Quality Score & Executive Metrics Grid -->
+<div class="row g-3 mb-4">
+    <!-- Composite Score Card -->
+    <div class="col-lg-4">
+        <div class="card card-custom h-100 p-4 d-flex flex-column justify-content-between">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="fw-bold text-muted text-uppercase small">Composite Quality Score</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Formula Defined</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 my-2">
+                <div class="score-badge-circle" style="border-color: {% if report.quality_score >= 80 %}#10b981{% elif report.quality_score >= 60 %}#f59e0b{% else %}#ef4444{% endif %}; background: {% if report.quality_score >= 80 %}#ecfdf5{% elif report.quality_score >= 60 %}#fffbeb{% else %}#fef2f2{% endif %};">
+                    <span class="score-badge-val" style="color: {% if report.quality_score >= 80 %}#065f46{% elif report.quality_score >= 60 %}#92400e{% else %}#991b1b{% endif %};">
+                        {{ report.quality_score|floatformat:1 }}
+                    </span>
+                    <span class="score-badge-lbl" style="color: {% if report.quality_score >= 80 %}#10b981{% elif report.quality_score >= 60 %}#f59e0b{% else %}#ef4444{% endif %};">/ 100</span>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        {% if report.quality_score >= 80 %}High Reliability
+                        {% elif report.quality_score >= 60 %}Acceptable with Flags
+                        {% else %}Requires Review
+                        {% endif %}
+                    </h5>
+                    <p class="text-muted small mb-0">
+                        Weighted: 30% Comp, 30% Valid, 20% Uniq, 20% Cons.
+                    </p>
+                </div>
+            </div>
+            <!-- Sub-dimensions progress bars -->
+            <div class="mt-3 pt-3 border-top small">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Completeness</span>
+                    <span class="fw-bold">{{ report.completeness_score|floatformat:1 }}%</span>
+                </div>
+                <div class="progress mb-2" style="height: 6px;">
+                    <div class="progress-bar bg-success" style="width: {{ report.completeness_score }}%;"></div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Validity (Ranges & Outliers)</span>
+                    <span class="fw-bold">{{ report.validity_score|floatformat:1 }}%</span>
+                </div>
+                <div class="progress mb-2" style="height: 6px;">
+                    <div class="progress-bar bg-primary" style="width: {{ report.validity_score }}%;"></div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Uniqueness</span>
+                    <span class="fw-bold">{{ report.uniqueness_score|floatformat:1 }}%</span>
+                </div>
+                <div class="progress mb-2" style="height: 6px;">
+                    <div class="progress-bar bg-info" style="width: {{ report.uniqueness_score }}%;"></div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Consistency</span>
+                    <span class="fw-bold">{{ report.consistency_score|floatformat:1 }}%</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-warning" style="width: {{ report.consistency_score }}%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transformation KPIs -->
+    <div class="col-lg-8">
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-icon-box kpi-icon-indigo">
+                        <i class="bi bi-table"></i>
+                    </div>
+                    <div class="kpi-title">Records Cleaned</div>
+                    <div class="kpi-value">{{ upload.row_count_clean }}</div>
+                    <div class="kpi-subtext">Original: {{ upload.row_count_raw }} rows ({{ upload.row_count_raw|add:upload.row_count_clean }} removed)</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-icon-box kpi-icon-emerald">
+                        <i class="bi bi-columns-gap"></i>
+                    </div>
+                    <div class="kpi-title">Active Columns</div>
+                    <div class="kpi-value">{{ upload.col_count_clean }}</div>
+                    <div class="kpi-subtext">Standardized to SQL-safe identifiers</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-icon-box kpi-icon-amber">
+                        <i class="bi bi-magic"></i>
+                    </div>
+                    <div class="kpi-title">Cleaning Actions</div>
+                    <div class="kpi-value">{{ actions|length }}</div>
+                    <div class="kpi-subtext">Reproducible rule transformations logged</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-icon-box kpi-icon-rose">
+                        <i class="bi bi-flag-fill"></i>
+                    </div>
+                    <div class="kpi-title">Quality Flags</div>
+                    <div class="kpi-value">
+                        {{ report.summary_json.flags_raised|default:"0" }}
+                    </div>
+                    <div class="kpi-subtext">Outliers and format anomalies surfaced</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs Container -->
+<div class="card card-custom">
+    <div class="card-header bg-white border-bottom px-4 pt-3 pb-0">
+        <ul class="nav nav-tabs card-header-tabs border-0" id="reportTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-bold py-3 px-3" id="profiles-tab" data-bs-toggle="tab" data-bs-target="#profiles" type="button" role="tab">
+                    <i class="bi bi-layout-three-columns me-1"></i> Column Profiles ({{ profiles|length }})
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold py-3 px-3" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions" type="button" role="tab">
+                    <i class="bi bi-clock-history me-1"></i> Cleaning Action Log ({{ actions|length }})
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold py-3 px-3" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab">
+                    <i class="bi bi-graph-up me-1"></i> Statistical Insights & Correlation
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold py-3 px-3 text-secondary" id="rerun-tab" data-bs-toggle="tab" data-bs-target="#rerun" type="button" role="tab">
+                    <i class="bi bi-arrow-repeat me-1"></i> Re-run Options
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content" id="reportTabsContent">
+        <!-- Tab 1: Column Profiles -->
+        <div class="tab-pane fade show active p-4" id="profiles" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-custom align-middle">
+                    <thead>
+                        <tr>
+                            <th>Column Name</th>
+                            <th>Role & Type</th>
+                            <th>Missing %</th>
+                            <th>Distinct</th>
+                            <th>Summary Statistics (Min &bull; Med &bull; Max)</th>
+                            <th>Moments (Mean &bull; SD &bull; Skew)</th>
+                            <th>Outliers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in profiles %}
+                        <tr>
+                            <td>
+                                <strong class="text-dark">{{ p.name_clean }}</strong>
+                                {% if p.name_raw != p.name_clean %}
+                                    <div class="text-muted small">was: <code>{{ p.name_raw }}</code></div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if p.role == 'numeric' %}bg-primary-subtle text-primary border border-primary-subtle{% elif p.role == 'category' %}bg-success-subtle text-success border border-success-subtle{% elif p.role == 'date' %}bg-info-subtle text-info border border-info-subtle{% else %}bg-secondary-subtle text-secondary border border-secondary-subtle{% endif %}">
+                                    {{ p.role|upper }}
+                                </span>
+                                <div class="text-muted small">{{ p.inferred_type }}</div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="{% if p.missing_pct_after > 20 %}text-danger fw-bold{% elif p.missing_pct_after > 0 %}text-warning fw-bold{% else %}text-success{% endif %}">
+                                        {{ p.missing_pct_after|floatformat:1 }}%
+                                    </span>
+                                </div>
+                                {% if p.missing_pct_before != p.missing_pct_after %}
+                                    <div class="text-muted small">was {{ p.missing_pct_before|floatformat:1 }}%</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="fw-medium">{{ p.n_unique }}</span>
+                            </td>
+                            <td>
+                                {% if p.role == 'numeric' and p.min_val is not None %}
+                                    <div class="small">
+                                        Min: <span class="fw-semibold">{{ p.min_val|floatformat:2 }}</span> &bull; 
+                                        Med: <span class="fw-semibold">{{ p.median_val|floatformat:2 }}</span> &bull; 
+                                        Max: <span class="fw-semibold">{{ p.max_val|floatformat:2 }}</span>
+                                    </div>
+                                    <div class="text-muted small">IQR: {{ p.iqr_val|floatformat:2 }}</div>
+                                {% elif p.role == 'category' %}
+                                    <span class="text-muted small text-truncate d-inline-block" style="max-width: 200px;">
+                                        {{ p.unique_sample|join:", " }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted small">&mdash;</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.role == 'numeric' and p.mean_val is not None %}
+                                    <div class="small">
+                                        Mean: <span class="fw-semibold">{{ p.mean_val|floatformat:2 }}</span> &bull; 
+                                        SD: <span class="fw-semibold">{{ p.std_val|floatformat:2 }}</span>
+                                    </div>
+                                    <div class="text-muted small">Skewness: {{ p.skew_val|floatformat:2 }}</div>
+                                {% else %}
+                                    <span class="text-muted small">&mdash;</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.outlier_count > 0 %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                                        {{ p.outlier_count }} outliers
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted small">0</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 2: Cleaning Action Log -->
+        <div class="tab-pane fade p-4" id="actions" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted small">Every modification and flag recorded for scientific reproducibility (O2 & O3).</span>
+                <input type="text" id="actionSearchInput" class="form-control form-control-sm w-auto" placeholder="Filter actions...">
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom align-middle" id="actionsTable">
+                    <thead>
+                        <tr>
+                            <th>Rule</th>
+                            <th>Column</th>
+                            <th>Before</th>
+                            <th>After / Action</th>
+                            <th>Severity</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in actions %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-dark-subtle text-dark border">
+                                    {{ a.rule_id }}
+                                </span>
+                                <div class="small fw-semibold mt-1">{{ a.rule_name }}</div>
+                            </td>
+                            <td>
+                                <code>{{ a.column|default:"(Table/Rows)" }}</code>
+                            </td>
+                            <td>
+                                <span class="text-muted small text-break">{{ a.before_value }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-primary small text-break">{{ a.after_value }}</span>
+                            </td>
+                            <td>
+                                <span class="severity-tag severity-{{ a.severity }}">
+                                    {{ a.severity }}
+                                </span>
+                            </td>
+                            <td class="small text-muted">
+                                {{ a.reason }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No modifications or flags recorded.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 3: Statistical Insights -->
+        <div class="tab-pane fade p-4" id="stats" role="tabpanel">
+            <h5 class="fw-bold mb-3">Statistical Normality & Distribution Guidance</h5>
+            <div class="row g-3 mb-4">
+                {% for p in profiles %}
+                    {% if p.role == 'numeric' and p.normality_hint %}
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="text-dark">{{ p.name_clean }}</strong>
+                                <span class="badge bg-secondary-subtle text-secondary">{{ p.normality_test }}</span>
+                            </div>
+                            <p class="small text-muted mb-0">
+                                <i class="bi bi-info-circle text-primary me-1"></i> {{ p.normality_hint }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <h5 class="fw-bold mb-3">Pearson Correlation Matrix (r)</h5>
+            {% if report.correlation_json %}
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Variable</th>
+                            {% for col_name in report.correlation_json.keys %}
+                                <th>{{ col_name }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row_name, cols in report.correlation_json.items %}
+                        <tr>
+                            <td class="fw-bold text-start table-light">{{ row_name }}</td>
+                            {% for c_name, val in cols.items %}
+                                <td style="background-color: rgba(99, 102, 241, {{ val|stringformat:'.2f'|slice:'1:' }});" class="{% if val > 0.6 or val < -0.6 %}fw-bold text-primary{% endif %}">
+                                    {{ val|floatformat:2 }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p class="text-muted small">Not enough numeric columns found to construct correlation matrix.</p>
+            {% endif %}
+        </div>
+
+        <!-- Tab 4: Re-run Options -->
+        <div class="tab-pane fade p-4" id="rerun" role="tabpanel">
+            <div class="card bg-light border-0 p-4" style="max-width: 640px;">
+                <h5 class="fw-bold mb-2">Re-run Pipeline with Adjusted Parameters</h5>
+                <p class="text-muted small mb-4">
+                    Experiment with different statistical thresholds, imputation options, or fuzzy matching ratios on this stored dataset.
+                </p>
+
+                <form action="{% url 'uploads:rerun' upload.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Outlier Method</label>
+                        <select name="outlier_method" class="form-select">
+                            <option value="iqr" {% if upload.config_options.outlier_method == 'iqr' %}selected{% endif %}>Tukey 1.5x IQR Rule (Default)</option>
+                            <option value="zscore" {% if upload.config_options.outlier_method == 'zscore' %}selected{% endif %}>Modified Z-Score (MAD > 3.5)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Missing Numeric Strategy</label>
+                        <select name="missing_numeric_strategy" class="form-select">
+                            <option value="flag" {% if upload.config_options.missing_numeric_strategy == 'flag' %}selected{% endif %}>Flag Only (Preserve NaN)</option>
+                            <option value="median" {% if upload.config_options.missing_numeric_strategy == 'median' %}selected{% endif %}>Median Imputation (Robust)</option>
+                            <option value="mean" {% if upload.config_options.missing_numeric_strategy == 'mean' %}selected{% endif %}>Mean Imputation</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Fuzzy Typo Threshold (50-100%)</label>
+                        <input type="number" name="fuzzy_threshold" value="{{ upload.config_options.fuzzy_threshold|default:85 }}" min="50" max="100" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="bi bi-arrow-repeat me-1"></i> Re-execute Cleaning Pipeline
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Live filter for action table
+    const searchInput = document.getElementById('actionSearchInput');
+    const table = document.getElementById('actionsTable');
+    if (searchInput && table) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+    }
+</script>
+{% endblock %}
