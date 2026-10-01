@@ -1,28 +1,28 @@
 {% extends 'base.html' %}
 
-{% block title %}System Audit Log{% endblock %}
+{% block title %}System Audit Log — Portal{% endblock %}
 {% block page_title %}Security & Ingestion Audit Log{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column gap-4">
+<div class="d-flex flex-column gap-3">
 
-  <!-- Info Header -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-    <div class="d-flex justify-content-between align-items-center">
+  <!-- Info Header Card -->
+  <div class="card p-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
       <div>
-        <h5 class="fw-bold mb-1"><i class="fa-solid fa-shield-halved text-primary me-2"></i>Traceability & Audit Trail</h5>
-        <p class="text-muted small mb-0">Immutable chronological record of spreadsheet uploads, rollback deletions, and user modifications.</p>
+        <h5 class="fw-semibold mb-1 text-dark" style="letter-spacing: -0.02em;">Traceability &amp; Ingestion Audit Trail</h5>
+        <span class="text-secondary font-xs">Immutable chronological record of spreadsheet uploads, rollback operations, and administrative access events.</span>
       </div>
       <div>
-        <span class="badge bg-light text-dark border"><i class="fa-solid fa-lock text-success me-1"></i> Tamper Evident</span>
+        <span class="badge badge-neutral"><i class="fa-solid fa-lock me-1 text-muted"></i> Tamper Evident</span>
       </div>
     </div>
   </div>
 
-  <!-- Audit Logs Table -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+  <!-- Audit Logs Table Card -->
+  <div class="card p-0 overflow-hidden">
     <div class="table-responsive">
-      <table class="table table-portal">
+      <table class="table table-portal mb-0">
         <thead>
           <tr>
             <th>Timestamp</th>
@@ -35,42 +35,43 @@
         <tbody>
           {% for log in logs %}
           <tr>
-            <td class="small text-muted font-monospace">{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+            <td><span class="font-mono font-xs text-muted">{{ log.timestamp|date:"Y-m-d H:i:s" }}</span></td>
             <td>
               {% if log.user %}
-              <strong>{{ log.user.username }}</strong>
-              <span class="badge badge-role badge-role-{{ log.user.profile.role|default:'admin' }}" style="font-size: 0.65rem;">
+              <span class="font-mono font-xs fw-semibold text-dark">{{ log.user.username }}</span>
+              <span class="badge badge-role badge-role-{{ log.user.profile.role|default:'admin' }} ms-1" style="font-size: 0.65rem;">
                 {{ log.user.profile.get_role_display|default:'Admin' }}
               </span>
               {% else %}
-              <span class="text-muted">System Automated</span>
+              <span class="text-muted font-xs">System Automated</span>
               {% endif %}
             </td>
             <td>
               {% if 'ROLLBACK' in log.action %}
-              <span class="badge bg-danger-subtle text-danger"><i class="fa-solid fa-rotate-left me-1"></i> {{ log.action }}</span>
+              <span class="badge badge-status-failed"><i class="fa-solid fa-rotate-left me-1"></i> {{ log.action }}</span>
               {% elif 'UPLOAD' in log.action %}
-              <span class="badge bg-primary-subtle text-primary"><i class="fa-solid fa-cloud-arrow-up me-1"></i> {{ log.action }}</span>
+              <span class="badge badge-role-admin"><i class="fa-solid fa-cloud-arrow-up me-1"></i> {{ log.action }}</span>
               {% elif 'USER' in log.action %}
-              <span class="badge bg-info-subtle text-info"><i class="fa-solid fa-user-gear me-1"></i> {{ log.action }}</span>
+              <span class="badge badge-role-registrar"><i class="fa-solid fa-user-gear me-1"></i> {{ log.action }}</span>
               {% else %}
-              <span class="badge bg-light text-dark">{{ log.action }}</span>
+              <span class="badge badge-neutral">{{ log.action }}</span>
               {% endif %}
             </td>
-            <td><span class="fw-semibold text-dark">{{ log.target }}</span></td>
+            <td><span class="font-mono font-xs text-dark fw-medium">{{ log.target }}</span></td>
             <td>
               {% if log.details %}
-              <code class="small text-muted">{{ log.details }}</code>
+              <span class="font-mono font-xs text-secondary">{{ log.details }}</span>
               {% else %}
-              <span class="text-muted">-</span>
+              <span class="text-muted font-mono font-xs">—</span>
               {% endif %}
             </td>
           </tr>
           {% empty %}
           <tr>
             <td colspan="5" class="text-center py-5 text-muted">
-              <i class="fa-solid fa-clipboard-check fa-3x mb-3 text-secondary d-block"></i>
-              No audit records currently recorded in the log.
+              <i class="fa-regular fa-clipboard fa-2x mb-3 text-muted d-block opacity-50"></i>
+              <div class="fw-medium text-dark mb-1">No audit events recorded</div>
+              <div class="font-xs">System actions, uploads, and modifications will appear here in chronological order.</div>
             </td>
           </tr>
           {% endfor %}
@@ -78,10 +79,10 @@
       </table>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination Footer -->
     {% if is_paginated %}
-    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} logs</small>
+    <div class="p-3 d-flex justify-content-between align-items-center border-top" style="border-color: var(--color-hairline) !important; background-color: var(--color-canvas-soft);">
+      <span class="font-mono font-xs text-muted">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }} events</span>
       <nav>
         <ul class="pagination pagination-sm mb-0">
           {% if page_obj.has_previous %}
@@ -99,3 +100,4 @@
 
 </div>
 {% endblock %}
+

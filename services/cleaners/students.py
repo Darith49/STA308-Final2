@@ -139,7 +139,10 @@ class StudentsCleaner(BaseCleaner):
                     if isinstance(raw_date, (datetime, date)):
                         parsed_dt = pd.to_datetime(raw_date)
                     else:
-                        parsed_dt = pd.to_datetime(str(raw_date).strip(), dayfirst=True)
+                        try:
+                            parsed_dt = pd.to_datetime(str(raw_date).strip(), format='ISO8601')
+                        except Exception:
+                            parsed_dt = pd.to_datetime(str(raw_date).strip(), dayfirst=True)
                     
                     p_date = parsed_dt.date()
                     if p_date > today:

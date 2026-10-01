@@ -1,25 +1,25 @@
 {% extends 'base.html' %}
 
-{% block title %}Grades & Enrollments{% endblock %}
+{% block title %}Grades & Enrollments — Portal{% endblock %}
 {% block page_title %}Academic Grades & Enrollments{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column gap-4">
+<div class="d-flex flex-column gap-3">
 
   <!-- Filter Toolbar -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-    <form method="get" class="row g-3 align-items-center">
+  <div class="card p-3">
+    <form method="get" class="row g-3 align-items-end">
       <div class="col-md-4">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Search</label>
-        <div class="input-group input-group-sm">
-          <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Student ID, name, or course...">
+        <label class="text-caption text-muted mb-1 d-block">Search Records</label>
+        <div class="input-group">
+          <span class="input-group-text bg-transparent text-muted" style="border-color: var(--color-hairline-strong);"><i class="fa-solid fa-magnifying-glass font-xs"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" style="border-left: 0;" placeholder="Student ID, name, or course...">
         </div>
       </div>
 
       <div class="col-md-3">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Semester</label>
-        <select name="semester" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="text-caption text-muted mb-1 d-block">Semester</label>
+        <select name="semester" class="form-select" onchange="this.form.submit()">
           <option value="">All Semesters</option>
           {% for sem in semesters %}
           <option value="{{ sem }}" {% if selected_sem == sem %}selected{% endif %}>{{ sem }}</option>
@@ -28,8 +28,8 @@
       </div>
 
       <div class="col-md-2">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Grade</label>
-        <select name="grade" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="text-caption text-muted mb-1 d-block">Grade</label>
+        <select name="grade" class="form-select" onchange="this.form.submit()">
           <option value="">All Grades</option>
           {% for g in grade_letters %}
           <option value="{{ g }}" {% if selected_grade == g %}selected{% endif %}>Grade {{ g }}</option>
@@ -37,20 +37,20 @@
         </select>
       </div>
 
-      <div class="col d-flex align-items-end justify-content-md-end gap-2">
-        <a href="{% url 'grades_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
-        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
-        <a href="{% url 'grades_export_csv' %}?q={{ search_query }}&semester={{ selected_sem }}&grade={{ selected_grade }}" class="btn btn-sm btn-outline-success">
-          <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+      <div class="col d-flex align-items-center justify-content-md-end gap-2">
+        <a href="{% url 'grades_list' %}" class="btn btn-sm btn-secondary">Reset</a>
+        <button type="submit" class="btn btn-sm btn-dark">Filter</button>
+        <a href="{% url 'grades_export_csv' %}?q={{ search_query }}&semester={{ selected_sem }}&grade={{ selected_grade }}" class="btn btn-sm btn-secondary">
+          <i class="fa-solid fa-file-arrow-down me-1 text-muted"></i> Export CSV
         </a>
       </div>
     </form>
   </div>
 
-  <!-- Records Table -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+  <!-- Records Table Card -->
+  <div class="card p-0 overflow-hidden">
     <div class="table-responsive">
-      <table class="table table-portal">
+      <table class="table table-portal mb-0">
         <thead>
           <tr>
             <th>Student</th>
@@ -66,30 +66,31 @@
           {% for enr in enrollments %}
           <tr>
             <td>
-              <div class="fw-bold">{{ enr.student.student_id }}</div>
-              <div class="small text-muted">{{ enr.student.name }}</div>
+              <div class="font-mono fw-semibold text-dark">{{ enr.student.student_id }}</div>
+              <div class="font-xs text-secondary">{{ enr.student.name }}</div>
             </td>
             <td>
-              <div class="fw-bold">{{ enr.course.code }}</div>
-              <div class="small text-muted">{{ enr.course.title }}</div>
+              <div class="font-mono fw-semibold text-dark">{{ enr.course.code }}</div>
+              <div class="font-xs text-secondary">{{ enr.course.title }}</div>
             </td>
-            <td><span class="badge bg-light text-dark border">{{ enr.course.department.code }}</span></td>
-            <td>{{ enr.semester }}</td>
-            <td><strong class="fs-6">{{ enr.score }}</strong></td>
-            <td><span class="badge badge-grade-{{ enr.grade_letter|lower }} fs-6">{{ enr.grade_letter }}</span></td>
+            <td><span class="badge badge-dept">{{ enr.course.department.code }}</span></td>
+            <td><span class="font-mono text-secondary font-xs">{{ enr.semester }}</span></td>
+            <td><span class="font-mono fw-bold fs-6 text-dark">{{ enr.score }}</span></td>
+            <td><span class="badge badge-grade-{{ enr.grade_letter|lower }} fs-6 px-2 py-1">{{ enr.grade_letter }}</span></td>
             <td>
               {% if enr.is_passing %}
-              <span class="badge bg-success-subtle text-success fw-semibold"><i class="fa-solid fa-circle-check me-1"></i> Pass</span>
+              <span class="badge badge-status-done"><i class="fa-solid fa-check me-1"></i> Pass</span>
               {% else %}
-              <span class="badge bg-danger-subtle text-danger fw-semibold"><i class="fa-solid fa-circle-xmark me-1"></i> Fail</span>
+              <span class="badge badge-status-failed"><i class="fa-solid fa-xmark me-1"></i> Fail</span>
               {% endif %}
             </td>
           </tr>
           {% empty %}
           <tr>
             <td colspan="7" class="text-center py-5 text-muted">
-              <i class="fa-solid fa-award fa-3x mb-3 text-secondary d-block"></i>
-              No grade records found matching your filters.
+              <i class="fa-regular fa-folder-open fa-2x mb-3 text-muted d-block opacity-50"></i>
+              <div class="fw-medium text-dark mb-1">No grade records found</div>
+              <div class="font-xs">Try adjusting your semester or grade filter.</div>
             </td>
           </tr>
           {% endfor %}
@@ -97,10 +98,10 @@
       </table>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination Footer -->
     {% if is_paginated %}
-    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} grade records</small>
+    <div class="p-3 d-flex justify-content-between align-items-center border-top" style="border-color: var(--color-hairline) !important; background-color: var(--color-canvas-soft);">
+      <span class="font-mono font-xs text-muted">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }}</span>
       <nav>
         <ul class="pagination pagination-sm mb-0">
           {% if page_obj.has_previous %}
@@ -118,3 +119,4 @@
 
 </div>
 {% endblock %}
+

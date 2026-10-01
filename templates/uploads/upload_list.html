@@ -7,11 +7,11 @@
 <div class="d-flex flex-column gap-4">
 
   <!-- Filter Toolbar -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+  <div class="card p-3 mb-1">
     <form method="get" class="row g-3 align-items-center">
       <div class="col-md-4">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Dataset Type</label>
-        <select name="dataset_type" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="form-label caption-uppercase mb-1" for="select-dataset-type">Dataset Type</label>
+        <select name="dataset_type" id="select-dataset-type" class="form-select form-select-sm" onchange="this.form.submit()">
           <option value="">All Dataset Types</option>
           {% for dt_val, dt_label in dataset_types %}
           <option value="{{ dt_val }}" {% if selected_type == dt_val %}selected{% endif %}>{{ dt_label }}</option>
@@ -20,8 +20,8 @@
       </div>
 
       <div class="col-md-4">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Status</label>
-        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="form-label caption-uppercase mb-1" for="select-status">Status</label>
+        <select name="status" id="select-status" class="form-select form-select-sm" onchange="this.form.submit()">
           <option value="">All Statuses</option>
           {% for st_val, st_label in status_choices %}
           <option value="{{ st_val }}" {% if selected_status == st_val %}selected{% endif %}>{{ st_label }}</option>
@@ -30,7 +30,7 @@
       </div>
 
       <div class="col-md-4 d-flex align-items-end justify-content-md-end gap-2">
-        <a href="{% url 'uploads:upload_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
+        <a href="{% url 'uploads:upload_list' %}" class="btn btn-sm btn-secondary">Reset</a>
         <a href="{% url 'uploads:upload_create' %}" class="btn btn-sm btn-primary">
           <i class="fa-solid fa-plus me-1"></i> New Upload
         </a>
@@ -39,7 +39,7 @@
   </div>
 
   <!-- Uploads Table Card -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+  <div class="card p-4">
     <div class="table-responsive">
       <table class="table table-portal">
         <thead>

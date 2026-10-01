@@ -84,7 +84,7 @@ class StudentsByDepartmentChartApiView(APIView):
             'datasets': [{
                 'label': 'Students Count',
                 'data': counts,
-                'backgroundColor': ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'],
+                'backgroundColor': ['#f54e00', '#9fc9a2', '#9fbbe0', '#c0a8dd', '#dfa88f', '#c08532', '#26251e'],
             }]
         })
 
@@ -118,7 +118,7 @@ class YearDistributionChartApiView(APIView):
             'datasets': [{
                 'label': 'Students by Year',
                 'data': counts,
-                'backgroundColor': ['#6366f1', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'],
+                'backgroundColor': ['#9fbbe0', '#9fc9a2', '#dfa88f', '#c0a8dd', '#c08532', '#f54e00'],
             }]
         })
 
@@ -148,10 +148,10 @@ class EnrollmentTrendChartApiView(APIView):
             'datasets': [{
                 'label': 'Enrollment Volume',
                 'data': counts,
-                'borderColor': '#3b82f6',
-                'backgroundColor': 'rgba(59, 130, 246, 0.15)',
+                'borderColor': '#f54e00',
+                'backgroundColor': 'rgba(245, 78, 0, 0.08)',
                 'fill': True,
-                'tension': 0.3,
+                'tension': 0.25,
             }]
         })
 
@@ -187,7 +187,7 @@ class GradeDistributionChartApiView(APIView):
             'datasets': [{
                 'label': 'Grades Count',
                 'data': [counts_dict[l] for l in letter_order],
-                'backgroundColor': ['#10b981', '#3b82f6', '#f59e0b', '#f97316', '#ef4444'],
+                'backgroundColor': ['#1f8a65', '#9fbbe0', '#c08532', '#dfa88f', '#cf2d56'],
             }]
         })
 
@@ -230,7 +230,9 @@ class PassRateByCourseChartApiView(APIView):
             'datasets': [{
                 'label': 'Pass Rate (%)',
                 'data': pass_rates,
-                'backgroundColor': '#10b981',
+                'backgroundColor': '#9fc9a2',
+                'borderColor': '#7eb682',
+                'borderWidth': 1,
             }]
         })
 
@@ -266,9 +268,9 @@ class AttendanceTrendChartApiView(APIView):
             'datasets': [{
                 'label': 'Attendance Rate (%)',
                 'data': rates,
-                'borderColor': '#10b981',
-                'backgroundColor': 'rgba(16, 185, 129, 0.15)',
+                'borderColor': '#26251e',
+                'backgroundColor': 'rgba(38, 37, 30, 0.05)',
                 'fill': True,
-                'tension': 0.3,
+                'tension': 0.25,
             }]
         })

@@ -1,35 +1,35 @@
 {% extends 'base.html' %}
 
-{% block title %}Attendance Records{% endblock %}
+{% block title %}Attendance Records — Portal{% endblock %}
 {% block page_title %}Student Attendance Logs{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column gap-4">
+<div class="d-flex flex-column gap-3">
 
   <!-- Filter Toolbar -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-    <form method="get" class="row g-3 align-items-center">
+  <div class="card p-3">
+    <form method="get" class="row g-3 align-items-end">
       <div class="col-md-4">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Search</label>
-        <div class="input-group input-group-sm">
-          <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Student ID, name, or course...">
+        <label class="text-caption text-muted mb-1 d-block">Search Records</label>
+        <div class="input-group">
+          <span class="input-group-text bg-transparent text-muted" style="border-color: var(--color-hairline-strong);"><i class="fa-solid fa-magnifying-glass font-xs"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" style="border-left: 0;" placeholder="Student ID, name, or course...">
         </div>
       </div>
 
       <div class="col-md-3">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Course</label>
-        <select name="course" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="text-caption text-muted mb-1 d-block">Course</label>
+        <select name="course" class="form-select" onchange="this.form.submit()">
           <option value="">All Courses</option>
           {% for c in courses %}
-          <option value="{{ c.code }}" {% if selected_course == c.code %}selected{% endif %}>{{ c.code }} - {{ c.title }}</option>
+          <option value="{{ c.code }}" {% if selected_course == c.code %}selected{% endif %}>{{ c.code }} — {{ c.title }}</option>
           {% endfor %}
         </select>
       </div>
 
       <div class="col-md-2">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Status</label>
-        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="text-caption text-muted mb-1 d-block">Status</label>
+        <select name="status" class="form-select" onchange="this.form.submit()">
           <option value="">All Statuses</option>
           {% for st_val, st_label in status_choices %}
           <option value="{{ st_val }}" {% if selected_status == st_val %}selected{% endif %}>{{ st_label }}</option>
@@ -37,17 +37,17 @@
         </select>
       </div>
 
-      <div class="col d-flex align-items-end justify-content-md-end gap-2">
-        <a href="{% url 'attendance_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
-        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+      <div class="col d-flex align-items-center justify-content-md-end gap-2">
+        <a href="{% url 'attendance_list' %}" class="btn btn-sm btn-secondary">Reset</a>
+        <button type="submit" class="btn btn-sm btn-dark">Filter</button>
       </div>
     </form>
   </div>
 
-  <!-- Records Table -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+  <!-- Records Table Card -->
+  <div class="card p-0 overflow-hidden">
     <div class="table-responsive">
-      <table class="table table-portal">
+      <table class="table table-portal mb-0">
         <thead>
           <tr>
             <th>Date</th>
@@ -60,21 +60,21 @@
         <tbody>
           {% for att in attendances %}
           <tr>
-            <td><strong class="text-dark">{{ att.date|date:"Y-m-d" }}</strong></td>
+            <td><span class="font-mono text-dark fw-medium">{{ att.date|date:"Y-m-d" }}</span></td>
             <td>
-              <div class="fw-bold">{{ att.student.student_id }}</div>
-              <div class="small text-muted">{{ att.student.name }}</div>
+              <div class="font-mono fw-semibold text-dark">{{ att.student.student_id }}</div>
+              <div class="font-xs text-secondary">{{ att.student.name }}</div>
             </td>
             <td>
-              <div class="fw-bold">{{ att.course.code }}</div>
-              <div class="small text-muted">{{ att.course.title }}</div>
+              <div class="font-mono fw-semibold text-dark">{{ att.course.code }}</div>
+              <div class="font-xs text-secondary">{{ att.course.title }}</div>
             </td>
-            <td><span class="badge bg-light text-dark border">{{ att.course.department.code }}</span></td>
+            <td><span class="badge badge-dept">{{ att.course.department.code }}</span></td>
             <td>
-              <span class="badge badge-att-{{ att.status|lower }} fs-6">
+              <span class="badge badge-att-{{ att.status|lower }} px-2 py-1">
                 {% if att.status == 'P' %}<i class="fa-solid fa-check me-1"></i>
                 {% elif att.status == 'A' %}<i class="fa-solid fa-xmark me-1"></i>
-                {% else %}<i class="fa-solid fa-clock me-1"></i>
+                {% else %}<i class="fa-regular fa-clock me-1"></i>
                 {% endif %}
                 {{ att.get_status_display }}
               </span>
@@ -83,8 +83,9 @@
           {% empty %}
           <tr>
             <td colspan="5" class="text-center py-5 text-muted">
-              <i class="fa-solid fa-calendar-xmark fa-3x mb-3 text-secondary d-block"></i>
-              No attendance logs found matching your filters.
+              <i class="fa-regular fa-folder-open fa-2x mb-3 text-muted d-block opacity-50"></i>
+              <div class="fw-medium text-dark mb-1">No attendance logs found</div>
+              <div class="font-xs">Try adjusting your filters or date range.</div>
             </td>
           </tr>
           {% endfor %}
@@ -92,10 +93,10 @@
       </table>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination Footer -->
     {% if is_paginated %}
-    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} attendance logs</small>
+    <div class="p-3 d-flex justify-content-between align-items-center border-top" style="border-color: var(--color-hairline) !important; background-color: var(--color-canvas-soft);">
+      <span class="font-mono font-xs text-muted">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }}</span>
       <nav>
         <ul class="pagination pagination-sm mb-0">
           {% if page_obj.has_previous %}
@@ -113,3 +114,4 @@
 
 </div>
 {% endblock %}
+

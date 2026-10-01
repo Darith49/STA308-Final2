@@ -1,45 +1,45 @@
 {% extends 'base.html' %}
 
-{% block title %}Courses Catalog{% endblock %}
+{% block title %}Courses Catalog — Portal{% endblock %}
 {% block page_title %}Academic Courses Catalog{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column gap-4">
+<div class="d-flex flex-column gap-3">
 
   <!-- Filter Toolbar -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-    <form method="get" class="row g-3 align-items-center">
+  <div class="card p-3">
+    <form method="get" class="row g-3 align-items-end">
       <div class="col-md-5">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Search</label>
-        <div class="input-group input-group-sm">
-          <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Course code or title...">
+        <label class="text-caption text-muted mb-1 d-block">Search Courses</label>
+        <div class="input-group">
+          <span class="input-group-text bg-transparent text-muted" style="border-color: var(--color-hairline-strong);"><i class="fa-solid fa-magnifying-glass font-xs"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" style="border-left: 0;" placeholder="Course code or title...">
         </div>
       </div>
 
       {% if is_admin or is_registrar %}
       <div class="col-md-4">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Department</label>
-        <select name="dept" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="text-caption text-muted mb-1 d-block">Department</label>
+        <select name="dept" class="form-select" onchange="this.form.submit()">
           <option value="">All Departments</option>
           {% for dept in departments %}
-          <option value="{{ dept.code }}" {% if selected_dept == dept.code %}selected{% endif %}>{{ dept.code }} - {{ dept.name }}</option>
+          <option value="{{ dept.code }}" {% if selected_dept == dept.code %}selected{% endif %}>{{ dept.code }} — {{ dept.name }}</option>
           {% endfor %}
         </select>
       </div>
       {% endif %}
 
-      <div class="col d-flex align-items-end justify-content-md-end gap-2">
-        <a href="{% url 'courses_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
-        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+      <div class="col d-flex align-items-center justify-content-md-end gap-2">
+        <a href="{% url 'courses_list' %}" class="btn btn-sm btn-secondary">Reset</a>
+        <button type="submit" class="btn btn-sm btn-dark">Filter</button>
       </div>
     </form>
   </div>
 
-  <!-- Records Table -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+  <!-- Records Table Card -->
+  <div class="card p-0 overflow-hidden">
     <div class="table-responsive">
-      <table class="table table-portal">
+      <table class="table table-portal mb-0">
         <thead>
           <tr>
             <th>Course Code</th>
@@ -52,17 +52,18 @@
         <tbody>
           {% for crs in courses %}
           <tr>
-            <td><strong>{{ crs.code }}</strong></td>
-            <td>{{ crs.title }}</td>
-            <td><span class="badge bg-light text-dark border">{{ crs.credits }} Credits</span></td>
-            <td><span class="badge bg-info-subtle text-info">{{ crs.department.code }} - {{ crs.department.name }}</span></td>
-            <td><span class="fw-semibold text-primary">{{ crs.student_count }} students</span></td>
+            <td><span class="font-mono fw-semibold text-dark">{{ crs.code }}</span></td>
+            <td class="fw-medium text-dark">{{ crs.title }}</td>
+            <td><span class="badge badge-neutral">{{ crs.credits }} cr</span></td>
+            <td><span class="badge badge-dept">{{ crs.department.code }}</span> <span class="font-xs text-secondary ms-1">{{ crs.department.name }}</span></td>
+            <td><span class="font-mono text-dark font-xs fw-semibold">{{ crs.student_count }} students</span></td>
           </tr>
           {% empty %}
           <tr>
             <td colspan="5" class="text-center py-5 text-muted">
-              <i class="fa-solid fa-book fa-3x mb-3 text-secondary d-block"></i>
-              No courses found matching your criteria.
+              <i class="fa-regular fa-folder-open fa-2x mb-3 text-muted d-block opacity-50"></i>
+              <div class="fw-medium text-dark mb-1">No courses found</div>
+              <div class="font-xs">Try adjusting your search criteria or department filter.</div>
             </td>
           </tr>
           {% endfor %}
@@ -70,10 +71,10 @@
       </table>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination Footer -->
     {% if is_paginated %}
-    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} courses</small>
+    <div class="p-3 d-flex justify-content-between align-items-center border-top" style="border-color: var(--color-hairline) !important; background-color: var(--color-canvas-soft);">
+      <span class="font-mono font-xs text-muted">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }}</span>
       <nav>
         <ul class="pagination pagination-sm mb-0">
           {% if page_obj.has_previous %}
@@ -91,3 +92,4 @@
 
 </div>
 {% endblock %}
+

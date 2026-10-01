@@ -3,6 +3,11 @@ from .models import Upload, DatasetType
 from .validators import validate_excel_file, compute_file_hash
 
 class UploadForm(forms.ModelForm):
+    dataset_type = forms.ChoiceField(
+        choices=DatasetType.choices,
+        initial=DatasetType.STUDENTS,
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'dataset_type_select'})
+    )
     allow_duplicate = forms.BooleanField(
         required=False,
         initial=False,
@@ -13,8 +18,7 @@ class UploadForm(forms.ModelForm):
         model = Upload
         fields = ['dataset_type', 'file']
         widgets = {
-            'dataset_type': forms.Select(attrs={'class': 'form-select form-select-lg', 'id': 'dataset_type_select'}),
-            'file': forms.FileInput(attrs={'class': 'form-control form-control-lg', 'id': 'file_input', 'accept': '.xlsx'}),
+            'file': forms.FileInput(attrs={'class': 'form-control', 'id': 'file_input', 'accept': '.xlsx'}),
         }
 
     def clean_file(self):

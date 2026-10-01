@@ -8,11 +8,11 @@
 <div class="d-flex flex-column gap-4">
 
   <!-- Interactive Filter Toolbar -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+  <div class="card p-3 mb-1">
     <div class="row g-3 align-items-center">
       <div class="col-md-3">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">
-          <i class="fa-solid fa-filter me-1"></i> Department
+        <label class="form-label caption-uppercase mb-1" for="filter-dept">
+          <i class="fa-solid fa-filter me-1 text-muted"></i> Department
         </label>
         {% if is_admin or is_registrar %}
         <select class="form-select form-select-sm" id="filter-dept">
@@ -27,8 +27,8 @@
       </div>
 
       <div class="col-md-3">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">
-          <i class="fa-solid fa-calendar me-1"></i> Semester
+        <label class="form-label caption-uppercase mb-1" for="filter-semester">
+          <i class="fa-solid fa-calendar me-1 text-muted"></i> Semester
         </label>
         <select class="form-select form-select-sm" id="filter-semester">
           <option value="">All Semesters</option>
@@ -39,8 +39,8 @@
       </div>
 
       <div class="col-md-3">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">
-          <i class="fa-solid fa-book-bookmark me-1"></i> Course Focus
+        <label class="form-label caption-uppercase mb-1" for="filter-course">
+          <i class="fa-solid fa-book-bookmark me-1 text-muted"></i> Course Focus
         </label>
         <select class="form-select form-select-sm" id="filter-course">
           <option value="">All Courses</option>
@@ -63,53 +63,53 @@
   <div class="row g-3">
     <div class="col-sm-6 col-xl-3">
       <div class="stat-card">
-        <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center justify-content-between mb-1">
           <span class="stat-label">Total Students</span>
-          <div class="stat-icon bg-primary-subtle text-primary">
-            <i class="fa-solid fa-user-graduate"></i>
+          <div class="stat-icon">
+            <i class="fa-solid fa-user-graduate text-muted"></i>
           </div>
         </div>
-        <div class="stat-value text-primary" id="kpi-total-students">--</div>
-        <small class="text-muted"><i class="fa-solid fa-check-circle text-success me-1"></i> Cleaned & Verified</small>
+        <div class="stat-value" id="kpi-total-students">--</div>
+        <small class="caption-uppercase" style="font-size: 10.5px; color: var(--color-semantic-success);"><i class="fa-solid fa-circle-check me-1"></i> Cleaned & Verified</small>
       </div>
     </div>
 
     <div class="col-sm-6 col-xl-3">
       <div class="stat-card">
-        <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center justify-content-between mb-1">
           <span class="stat-label">Active Courses</span>
-          <div class="stat-icon bg-info-subtle text-info">
-            <i class="fa-solid fa-book-open"></i>
+          <div class="stat-icon">
+            <i class="fa-solid fa-book-open text-muted"></i>
           </div>
         </div>
-        <div class="stat-value text-info" id="kpi-total-courses">--</div>
-        <small class="text-muted"><i class="fa-solid fa-layer-group text-info me-1"></i> Across faculties</small>
+        <div class="stat-value" id="kpi-total-courses">--</div>
+        <small class="caption-uppercase" style="font-size: 10.5px;"><i class="fa-solid fa-layer-group text-muted me-1"></i> Across faculties</small>
       </div>
     </div>
 
     <div class="col-sm-6 col-xl-3">
       <div class="stat-card">
-        <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center justify-content-between mb-1">
           <span class="stat-label">Average Score</span>
-          <div class="stat-icon bg-success-subtle text-success">
-            <i class="fa-solid fa-chart-line"></i>
+          <div class="stat-icon">
+            <i class="fa-solid fa-chart-line text-brand"></i>
           </div>
         </div>
-        <div class="stat-value text-success" id="kpi-avg-score">--%</div>
-        <small class="text-muted"><i class="fa-solid fa-arrow-trend-up text-success me-1"></i> Semester performance</small>
+        <div class="stat-value" id="kpi-avg-score">--%</div>
+        <small class="caption-uppercase" style="font-size: 10.5px; color: var(--color-primary);"><i class="fa-solid fa-arrow-trend-up me-1"></i> Semester average</small>
       </div>
     </div>
 
     <div class="col-sm-6 col-xl-3">
       <div class="stat-card">
-        <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center justify-content-between mb-1">
           <span class="stat-label">Pass Rate</span>
-          <div class="stat-icon bg-warning-subtle text-warning">
-            <i class="fa-solid fa-award"></i>
+          <div class="stat-icon">
+            <i class="fa-solid fa-award text-muted"></i>
           </div>
         </div>
-        <div class="stat-value text-warning" id="kpi-pass-rate">--%</div>
-        <small class="text-muted"><i class="fa-solid fa-percent text-warning me-1"></i> Grade &ge; 50%</small>
+        <div class="stat-value" id="kpi-pass-rate">--%</div>
+        <small class="caption-uppercase" style="font-size: 10.5px;"><i class="fa-solid fa-percent text-muted me-1"></i> Passing mark &ge; 50%</small>
       </div>
     </div>
   </div>

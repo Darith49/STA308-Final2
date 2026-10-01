@@ -31,3 +31,22 @@ def test_chart_api_format(api_client, admin_user):
         assert 'datasets' in data, f"Missing 'datasets' in {ep}"
         assert isinstance(data['labels'], list)
         assert isinstance(data['datasets'], list)
+
+@pytest.mark.django_db
+def test_upload_status_api(api_client, admin_user):
+    from uploads.models import Upload
+    api_client.force_authenticate(user=admin_user)
+    upload = Upload.objects.create(
+        dataset_type='students',
+        uploaded_by=admin_user,
+        file_hash='abc123status',
+        status='done',
+        progress_percent=100
+    )
+    resp = api_client.get(f'/api/uploads/{upload.id}/status/')
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data['id'] == upload.id
+    assert data['status'] == 'done'
+    assert data['progress'] == 100
+

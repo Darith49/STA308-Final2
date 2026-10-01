@@ -1,151 +1,120 @@
 # University Data Portal
 
-> **"From messy Excel files to trusted, visual insights in one click."**
+STA308 Final Project - Statistical Data Cleaning, Quality Profiling & University Management
 
-The **University Data Portal** is an end-to-end, role-scoped academic data ingestion, cleaning, and analytics platform. It replaces manual, error-prone spreadsheet tracking with automated validation, transparent explainable data cleaning, strict database normalization, and live interactive dashboards.
-
----
-
-## 🎯 Key Objectives & Features
-
-1. **Role-Based Access Control (RBAC):**
-   - **Admin:** University-wide visibility, dataset uploads, user management, and upload rollbacks.
-   - **Registrar:** University-wide visibility, dataset uploads, and rollback of own uploads.
-   - **Dept Head / Lecturer:** Strictly department-scoped dashboards, course analytics, and student records.
-   - **Student:** Personalized student view of own course enrollments, letter grades, and attendance history.
-   - *Enforced server-side on every view and API endpoint via `RoleRequiredMixin` and `scope_for(user)`.*
-
-2. **Automated, Explainable Cleaning Pipeline:**
-   - **Stage 1 (Structural):** Case-insensitive header alias mapping (e.g. `Student Number` &rarr; `student_id`), whitespace stripping, empty row/column elimination, and business key deduplication.
-   - **Stage 2 (Type Conversion):** Number and date parsing across multiple international date formats.
-   - **Stage 3 (Standardization):** Canonical mapping for gender (`m`/`f` &rarr; `Male`/`Female`), departments, programs, and attendance (`present`/`1` &rarr; `P`, `absent`/`0` &rarr; `A`, `late`/`tardy` &rarr; `L`).
-   - **Stage 4 (Validation):** Row-level constraint verification (missing keys, score range `0-100`, year range `1-6`, future dates, and foreign key integrity).
-   - **Stage 5 (Atomic Ingestion):** `transaction.atomic()`, `bulk_create(batch_size=500)`, exact row-by-row error traceability, and JSON report generation.
-
-3. **Traceability & Rollback:**
-   - **Cleaning Report:** Metrics cards breakdown and error logs linking each rejected cell directly to its Excel row number.
-   - **Error XLSX Export:** One-click download of an Excel spreadsheet containing only rejected rows with exact error reasons.
-   - **Cascade Rollback:** Deleting an upload rolls back all associated database rows in a single atomic transaction.
-   - **Audit Trail:** Immutable audit log tracking spreadsheet uploads, rollbacks, and account modifications.
-
-4. **Live Scoped Dashboards:**
-   - Powered by **Chart.js** with asynchronous `fetch()` API updates on filter changes (Department, Semester, Course).
-   - KPI metric cards: Total Students, Active Courses, Average Score, Pass Rate, Monthly Ingestion Volume.
-   - Charts: Students by Department (Bar), Year Distribution (Doughnut), Enrollment Trend (Line), Grade Distribution (Column), Course Pass Rates (Horizontal Bar), and Attendance Trends (Line).
-
-5. **Security Hardening:**
-   - `LoginRequiredMiddleware` enforcing authentication across the portal by default.
-   - Upload security: Strict `.xlsx` only, file size cap (5 MB), openpyxl `read_only=True` inspection, cell count limits, and SHA-256 duplicate detection.
-   - CSV formula injection protection: Prefixes cells starting with `=`, `+`, `-`, `@`, `\t`, `\r` with `'`.
+A Django 5 web application engineered for automated, reproducible data cleaning and quality profiling of university spreadsheets (.xlsx). Features a 14-stage pure-Python cleaning pipeline, transactional domain ingestion, role-based access control, server-side data scoping, and live-updating Chart.js dashboards.
 
 ---
 
-## 🏗️ Architecture & Repository Structure
+## Role-Based Architecture
 
-```
-portal/
-├── config/
-│   ├── settings/ (base.py, dev.py, prod.py)
-│   ├── urls.py
-│   ├── celery.py
-│   └── wsgi.py
-├── accounts/          # Roles (Profile), Permissions, Middleware, User CRUD, Audit Logs
-├── academics/         # Department, Program, Course, Student, Enrollment, Attendance
-├── uploads/           # Upload, UploadError, forms, validators, background tasks
-├── analytics/         # Chart & KPI REST endpoints, role scoping (scope_for)
-├── services/
-│   ├── cleaners/      # Pure cleaners: base.py, students.py, courses.py, grades.py, attendance.py
-│   ├── importers.py   # Bulk import engine and error XLSX generator
-│   └── templates_xlsx.py # Downloadable XLSX template generator
-├── templates/         # Clean UI templates (Bootstrap 5.3 + FontAwesome)
-├── static/
-│   ├── css/portal.css # Design system & typography
-│   └── js/charts.js   # Dynamic Chart.js renderer & upload polling
-├── sample_data/       # 4 clean + 4 deliberately messy Excel spreadsheets + generator
-├── tests/             # Comprehensive pytest suite (Cleaners, Permissions, Importers, API)
-├── Dockerfile & docker-compose.yml
-├── manage.py & requirements.txt
-```
+The system routes users to dedicated portals based on their assigned role:
+
+### 1. Administrator (Full Control)
+- System-wide dashboard with cross-department KPIs and performance charts.
+- User management: create users, assign roles and departments, deactivate/activate accounts, and reset passwords.
+- Curriculum management: CRUD for departments, academic programs, and courses.
+- System audit log: tracking all logins, uploads, deletions, modifications, and exports.
+- Upload deletion: rolls back all domain database rows linked to the upload.
+
+### 2. Registrar (Data Owner)
+- Starter template downloads for each dataset type (Courses, Students, Grades, Attendance) with example data and rules sheets.
+- Uploads XLSX datasets in order: Courses, then Students, then Grades, then Attendance.
+- Validates file security (.xlsx format, size limits, signature check, no macros, duplicate SHA-256 prevention, and schema validation).
+- Automated cleaning pipeline: cleans headers, removes duplicates, repairs typos, standardizes categories, and detects outliers.
+- Transactional ingestion: valid records are bulk-inserted; invalid records are saved to an error log.
+- Downloadable error file (.xlsx) listing rejected rows, column names, and failure reasons.
+- Deleting an upload rolls back only that upload's imported rows.
+
+### 3. Department Head / Lecturer (Read-Only, Own Department)
+- Scoped department dashboard: strictly limited to the user's assigned department at the database level.
+- KPIs: total students, active courses, average grades, pass rates, and attendance rate.
+- Dynamic Chart.js visualizations: score distribution, pass rate by course, and attendance ratios.
+- Live filter bar: filter charts by semester, program, and course via asynchronous API updates without page reload.
+- Browse records: paginated and searchable tables for students, courses, grades, and attendance.
+- Protected CSV export: exports filtered records with formula injection sanitization.
+- Password management: update credentials for own account.
+
+### 4. Student (Stretch Goal)
+- Student self-service portal: scoped strictly to the authenticated student's personal records.
+- Transcript view: course grades, numerical scores, letter grades, GPA points, and completion status.
+- Attendance tracker: session presence, tardiness, and overall attendance rate.
+- GPA trend chart: interactive visualization of term-by-term GPA progression.
+- Profile editing: update contact information and account password.
 
 ---
 
-## 🚀 Quickstart Guide
+## Security and Data Scoping
 
-### 1. Prerequisites
-- Python 3.11+
-- Virtual environment (recommended)
+- Request lifecycle: Request -> Logged in? -> Role allowed? -> Data scoped to role (scope_for) -> Response.
+- Unauthorized access attempts are rejected with an HTTP 403 Forbidden page.
+- Scoping occurs in database queries, preventing URL manipulation from exposing unauthorized departmental data.
+- Formula injection protection shields all exported CSV files by neutralizing leading formula symbols (=, +, -, @).
 
-### 2. Setup & Installation
+---
+
+## Quickstart Guide
+
+### 1. Clone the repository
 ```bash
-# Clone and enter directory
-cd "Assignment STA"
+git clone https://github.com/Darith49/STA308-Final2.git
+cd STA308-Final2
+```
 
-# Install dependencies
+### 2. Set up virtual environment
+```bash
+python -m venv .venv
+# Windows PowerShell:
+.\.venv\Scripts\Activate.ps1
+# Linux / macOS:
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# Run migrations
+### 4. Run database migrations
+```bash
 python manage.py migrate
+```
 
-# Seed database with initial departments, courses, and demo accounts
-python manage.py seed_demo
+### 5. Seed demo accounts and sample data
+```bash
+python seed_demo.py
+```
 
-# Start the development server
+### 6. Start development server
+```bash
 python manage.py runserver
 ```
-
-Open your browser to: **`http://127.0.0.1:8000/`**
+Visit http://127.0.0.1:8000 in your browser.
 
 ---
 
-## 👥 Demo User Accounts
+## Pre-Configured Demo Accounts
 
-All pre-seeded test accounts use the password: **`Password123!`**
+All demo accounts share the password: `password123`
 
-| Username | Role | Department Scope | Key Permissions |
+| Role | Username | Password | Default Landing Page |
 | :--- | :--- | :--- | :--- |
-| `admin` | **Admin** | University-wide | Full access, user management, delete any upload |
-| `registrar` | **Registrar** | University-wide | Ingest spreadsheets, rollback own uploads |
-| `dept_head` | **Dept Head** | Computer Science (`CS`) | Scoped analytics & student lists for CS only |
-| `student` | **Student** | Linked Student (`STU1001`) | Personal grades, enrolled courses, attendance |
-
-*(The login page includes quick one-click credential buttons for immediate testing).*
+| Administrator | admin_demo | password123 | /academic/admin/overview/ |
+| Registrar | registrar_demo | password123 | /uploads/ |
+| Department Head | depthead_demo | password123 | /academic/department/dashboard/ |
+| Student | student_demo | password123 | /academic/student/portal/ |
 
 ---
 
-## 📊 Sample Data Files (`sample_data/`)
+## Running Automated Tests
 
-Pre-generated sample spreadsheets are ready to test the ingestion pipeline:
-
-| Dataset | Clean File | Deliberately Messy File (Test Case) |
-| :--- | :--- | :--- |
-| **Students** | `students_clean.xlsx` | `students_messy.xlsx` *(duplicate IDs, lowercase depts, year 99, invalid email, future date)* |
-| **Courses** | `courses_clean.xlsx` | `courses_messy.xlsx` *(missing codes, duplicate codes, invalid credits)* |
-| **Grades** | `grades_clean.xlsx` | `grades_messy.xlsx` *(scores > 100, negative scores, unknown student IDs, non-numeric grades)* |
-| **Attendance** | `attendance_clean.xlsx` | `attendance_messy.xlsx` *(future dates, unknown status strings, status variations 'present'/'0')* |
-
-To regenerate sample files at any time:
-```bash
-python sample_data/generate_sample_data.py
-```
-
----
-
-## 🧪 Testing & Validation
-
-The test suite contains 22 automated tests covering unit cleaner logic, permission matrices, API contracts, and bulk importer rollback behavior:
+Run the full test suite covering cleaning rules, security sanitization, role authorization, and data scoping:
 
 ```bash
-# Run the full test suite
-pytest
+python manage.py test tests.test_cleaning_pipeline tests.test_security_and_api tests.test_role_architecture
 ```
 
----
-
-## 🐳 Docker Deployment
-
-To launch the portal with PostgreSQL, Redis, and a Celery worker:
-
+Run benchmarks and evaluation metrics:
 ```bash
-docker-compose up --build
+python evaluate_cleaning.py
 ```
-Access the application at `http://localhost:8000`.

@@ -8,6 +8,8 @@ from academics.views import (
     AttendanceListView
 )
 
+from uploads.views import UploadStatusApiView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', DashboardView.as_view(), name='dashboard'),
@@ -20,9 +22,9 @@ urlpatterns = [
     path('attendance/', AttendanceListView.as_view(), name='attendance_list'),
     path('accounts/', include('accounts.urls')),
     path('uploads/', include('uploads.urls')),
+    path('api/uploads/<int:pk>/status/', UploadStatusApiView.as_view(), name='api_upload_status'),
     path('', include('analytics.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

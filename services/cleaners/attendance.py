@@ -70,7 +70,10 @@ class AttendanceCleaner(BaseCleaner):
                 if isinstance(raw_date, (datetime, date)):
                     dt = pd.to_datetime(raw_date)
                 else:
-                    dt = pd.to_datetime(str(raw_date).strip(), dayfirst=True)
+                    try:
+                        dt = pd.to_datetime(str(raw_date).strip(), format='ISO8601')
+                    except Exception:
+                        dt = pd.to_datetime(str(raw_date).strip(), dayfirst=True)
                 p_date = dt.date()
                 if p_date > today:
                     self.record_error(row_num, 'date', raw_date, f"Attendance date {p_date} is in the future; row rejected.")

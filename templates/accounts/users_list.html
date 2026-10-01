@@ -1,25 +1,25 @@
 {% extends 'base.html' %}
 
-{% block title %}Manage Users{% endblock %}
+{% block title %}Manage Users — Portal{% endblock %}
 {% block page_title %}User Accounts & Access Control{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column gap-4">
+<div class="d-flex flex-column gap-3">
 
   <!-- Filter Toolbar -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-    <form method="get" class="row g-3 align-items-center">
+  <div class="card p-3">
+    <form method="get" class="row g-3 align-items-end">
       <div class="col-md-5">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Search Users</label>
-        <div class="input-group input-group-sm">
-          <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Username or email...">
+        <label class="text-caption text-muted mb-1 d-block">Search Users</label>
+        <div class="input-group">
+          <span class="input-group-text bg-transparent text-muted" style="border-color: var(--color-hairline-strong);"><i class="fa-solid fa-magnifying-glass font-xs"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" style="border-left: 0;" placeholder="Username or email...">
         </div>
       </div>
 
       <div class="col-md-4">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Role Filter</label>
-        <select name="role" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="text-caption text-muted mb-1 d-block">Role Filter</label>
+        <select name="role" class="form-select" onchange="this.form.submit()">
           <option value="">All Roles</option>
           {% for r_val, r_label in roles %}
           <option value="{{ r_val }}" {% if selected_role == r_val %}selected{% endif %}>{{ r_label }}</option>
@@ -27,19 +27,19 @@
         </select>
       </div>
 
-      <div class="col d-flex align-items-end justify-content-md-end gap-2">
-        <a href="{% url 'accounts:user_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
+      <div class="col d-flex align-items-center justify-content-md-end gap-2">
+        <a href="{% url 'accounts:user_list' %}" class="btn btn-sm btn-secondary">Reset</a>
         <a href="{% url 'accounts:user_create' %}" class="btn btn-sm btn-primary">
-          <i class="fa-solid fa-user-plus me-1"></i> New User
+          <i class="fa-solid fa-plus me-1"></i> New User
         </a>
       </div>
     </form>
   </div>
 
-  <!-- Users Table -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+  <!-- Users Table Card -->
+  <div class="card p-0 overflow-hidden">
     <div class="table-responsive">
-      <table class="table table-portal">
+      <table class="table table-portal mb-0">
         <thead>
           <tr>
             <th>Username</th>
@@ -54,9 +54,15 @@
         <tbody>
           {% for u in users %}
           <tr>
-            <td><strong>{{ u.username }}</strong></td>
-            <td>{{ u.get_full_name|default:'-' }}</td>
-            <td>{{ u.email|default:'-' }}</td>
+            <td><span class="font-mono fw-semibold text-dark">{{ u.username }}</span></td>
+            <td class="text-dark fw-medium">{{ u.get_full_name|default:'—' }}</td>
+            <td>
+              {% if u.email %}
+              <span class="font-mono font-xs text-secondary">{{ u.email }}</span>
+              {% else %}
+              <span class="font-mono font-xs text-muted">—</span>
+              {% endif %}
+            </td>
             <td>
               <span class="badge badge-role badge-role-{{ u.profile.role|default:'admin' }}">
                 {{ u.profile.get_role_display|default:'Admin' }}
@@ -64,28 +70,30 @@
             </td>
             <td>
               {% if u.profile.department %}
-              <span class="badge bg-light text-dark border">{{ u.profile.department.code }} - {{ u.profile.department.name }}</span>
+              <span class="badge badge-dept">{{ u.profile.department.code }}</span> <span class="font-xs text-secondary ms-1">{{ u.profile.department.name }}</span>
               {% else %}
-              <span class="text-muted small">All Departments</span>
+              <span class="text-muted font-xs">All Departments</span>
               {% endif %}
             </td>
             <td>
               {% if u.is_active %}
-              <span class="badge bg-success-subtle text-success">Active</span>
+              <span class="badge badge-status-done"><i class="fa-solid fa-check me-1"></i> Active</span>
               {% else %}
-              <span class="badge bg-danger-subtle text-danger">Inactive</span>
+              <span class="badge badge-status-failed"><i class="fa-solid fa-xmark me-1"></i> Inactive</span>
               {% endif %}
             </td>
             <td class="text-end">
-              <a href="{% url 'accounts:user_edit' u.id %}" class="btn btn-sm btn-outline-secondary">
-                <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+              <a href="{% url 'accounts:user_edit' u.id %}" class="btn btn-sm btn-secondary py-1 px-2 font-xs">
+                <i class="fa-solid fa-pen-to-square me-1 text-muted"></i> Edit
               </a>
             </td>
           </tr>
           {% empty %}
           <tr>
             <td colspan="7" class="text-center py-5 text-muted">
-              No user accounts found matching your query.
+              <i class="fa-regular fa-folder-open fa-2x mb-3 text-muted d-block opacity-50"></i>
+              <div class="fw-medium text-dark mb-1">No user accounts found</div>
+              <div class="font-xs">Try adjusting your search criteria or role filter.</div>
             </td>
           </tr>
           {% endfor %}
@@ -93,10 +101,10 @@
       </table>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination Footer -->
     {% if is_paginated %}
-    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} accounts</small>
+    <div class="p-3 d-flex justify-content-between align-items-center border-top" style="border-color: var(--color-hairline) !important; background-color: var(--color-canvas-soft);">
+      <span class="font-mono font-xs text-muted">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }} accounts</span>
       <nav>
         <ul class="pagination pagination-sm mb-0">
           {% if page_obj.has_previous %}
@@ -114,3 +122,4 @@
 
 </div>
 {% endblock %}
+

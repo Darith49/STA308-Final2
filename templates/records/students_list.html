@@ -1,37 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}Students Records{% endblock %}
+{% block title %}Students Directory — Portal{% endblock %}
 {% block page_title %}Student Directory{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column gap-4">
+<div class="d-flex flex-column gap-3">
 
   <!-- Filter Toolbar -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-    <form method="get" class="row g-3 align-items-center">
+  <div class="card p-3">
+    <form method="get" class="row g-3 align-items-end">
       <div class="col-md-4">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Search</label>
-        <div class="input-group input-group-sm">
-          <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Student ID, name, or email...">
+        <label class="text-caption text-muted mb-1 d-block">Search Directory</label>
+        <div class="input-group">
+          <span class="input-group-text bg-transparent text-muted" style="border-color: var(--color-hairline-strong);"><i class="fa-solid fa-magnifying-glass font-xs"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" style="border-left: 0;" placeholder="Student ID, name, or email...">
         </div>
       </div>
 
       {% if is_admin or is_registrar %}
       <div class="col-md-3">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Department</label>
-        <select name="dept" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="text-caption text-muted mb-1 d-block">Department</label>
+        <select name="dept" class="form-select" onchange="this.form.submit()">
           <option value="">All Departments</option>
           {% for dept in departments %}
-          <option value="{{ dept.code }}" {% if selected_dept == dept.code %}selected{% endif %}>{{ dept.code }} - {{ dept.name }}</option>
+          <option value="{{ dept.code }}" {% if selected_dept == dept.code %}selected{% endif %}>{{ dept.code }} — {{ dept.name }}</option>
           {% endfor %}
         </select>
       </div>
       {% endif %}
 
       <div class="col-md-2">
-        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Year Level</label>
-        <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
+        <label class="text-caption text-muted mb-1 d-block">Year Level</label>
+        <select name="year" class="form-select" onchange="this.form.submit()">
           <option value="">All Years</option>
           {% for yr in "123456"|make_list %}
           <option value="{{ yr }}" {% if selected_year == yr %}selected{% endif %}>Year {{ yr }}</option>
@@ -39,20 +39,20 @@
         </select>
       </div>
 
-      <div class="col d-flex align-items-end justify-content-md-end gap-2">
-        <a href="{% url 'students_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
-        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
-        <a href="{% url 'students_export_csv' %}?q={{ search_query }}&dept={{ selected_dept }}&year={{ selected_year }}" class="btn btn-sm btn-outline-success">
-          <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+      <div class="col d-flex align-items-center justify-content-md-end gap-2">
+        <a href="{% url 'students_list' %}" class="btn btn-sm btn-secondary">Reset</a>
+        <button type="submit" class="btn btn-sm btn-dark">Filter</button>
+        <a href="{% url 'students_export_csv' %}?q={{ search_query }}&dept={{ selected_dept }}&year={{ selected_year }}" class="btn btn-sm btn-secondary">
+          <i class="fa-solid fa-file-arrow-down me-1 text-muted"></i> Export CSV
         </a>
       </div>
     </form>
   </div>
 
-  <!-- Records Table -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+  <!-- Records Table Card -->
+  <div class="card p-0 overflow-hidden">
     <div class="table-responsive">
-      <table class="table table-portal">
+      <table class="table table-portal mb-0">
         <thead>
           <tr>
             <th>Student ID</th>
@@ -68,20 +68,27 @@
         <tbody>
           {% for stu in students %}
           <tr>
-            <td><strong>{{ stu.student_id }}</strong></td>
-            <td>{{ stu.name }}</td>
-            <td><span class="badge bg-light text-dark border">{{ stu.gender }}</span></td>
-            <td><span class="badge bg-primary-subtle text-primary">{{ stu.program.department.code|default:'-' }}</span></td>
-            <td class="text-truncate" style="max-width: 180px;">{{ stu.program.name|default:'-' }}</td>
-            <td>{% if stu.year %}Year {{ stu.year }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
-            <td class="small text-muted">{{ stu.enrollment_date|date:"Y-m-d"|default:'-' }}</td>
-            <td class="small"><a href="mailto:{{ stu.email }}">{{ stu.email|default:'-' }}</a></td>
+            <td><span class="font-mono fw-semibold text-dark">{{ stu.student_id }}</span></td>
+            <td class="fw-medium text-dark">{{ stu.name }}</td>
+            <td><span class="badge badge-neutral">{{ stu.gender }}</span></td>
+            <td><span class="badge badge-dept">{{ stu.program.department.code|default:'—' }}</span></td>
+            <td class="text-truncate text-secondary" style="max-width: 200px;">{{ stu.program.name|default:'—' }}</td>
+            <td>{% if stu.year %}<span class="font-mono text-dark">Yr {{ stu.year }}</span>{% else %}<span class="text-muted">—</span>{% endif %}</td>
+            <td><span class="font-mono text-muted font-xs">{{ stu.enrollment_date|date:"Y-m-d"|default:'—' }}</span></td>
+            <td>
+              {% if stu.email %}
+              <a href="mailto:{{ stu.email }}" class="text-secondary font-mono font-xs text-decoration-none">{{ stu.email }}</a>
+              {% else %}
+              <span class="text-muted font-mono font-xs">—</span>
+              {% endif %}
+            </td>
           </tr>
           {% empty %}
           <tr>
             <td colspan="8" class="text-center py-5 text-muted">
-              <i class="fa-solid fa-user-slash fa-3x mb-3 text-secondary d-block"></i>
-              No students found matching your search criteria.
+              <i class="fa-regular fa-folder-open fa-2x mb-3 text-muted d-block opacity-50"></i>
+              <div class="fw-medium text-dark mb-1">No students found</div>
+              <div class="font-xs">Try adjusting your search query or department filter.</div>
             </td>
           </tr>
           {% endfor %}
@@ -89,10 +96,10 @@
       </table>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination Footer -->
     {% if is_paginated %}
-    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} students</small>
+    <div class="p-3 d-flex justify-content-between align-items-center border-top" style="border-color: var(--color-hairline) !important; background-color: var(--color-canvas-soft);">
+      <span class="font-mono font-xs text-muted">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }}</span>
       <nav>
         <ul class="pagination pagination-sm mb-0">
           {% if page_obj.has_previous %}
@@ -110,3 +117,4 @@
 
 </div>
 {% endblock %}
+

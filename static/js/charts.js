@@ -28,7 +28,7 @@ async function loadChart(canvasId, type, apiUrl, queryParams = {}, optionsOverri
         }
         const data = await response.json();
 
-        // Default Modern Aesthetics for Chart.js
+        // Cursor Design System Aesthetics for Chart.js
         const defaultOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -36,28 +36,45 @@ async function loadChart(canvasId, type, apiUrl, queryParams = {}, optionsOverri
                 legend: {
                     position: type === 'doughnut' || type === 'pie' ? 'right' : 'top',
                     labels: {
-                        boxWidth: 12,
-                        padding: 15,
-                        font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: 600 }
+                        boxWidth: 10,
+                        padding: 14,
+                        color: '#5a5852',
+                        font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: 500 }
                     }
                 },
                 tooltip: {
-                    backgroundColor: '#0f172a',
-                    titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 13, weight: 700 },
-                    bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 },
-                    padding: 10,
-                    cornerRadius: 8,
+                    backgroundColor: '#26251e',
+                    titleColor: '#f7f7f4',
+                    bodyColor: '#e6e5e0',
+                    titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: 600 },
+                    bodyFont: { family: "'JetBrains Mono', monospace", size: 11 },
+                    padding: 9,
+                    cornerRadius: 6,
+                    borderWidth: 1,
+                    borderColor: '#3e3d36',
                 }
             },
+            elements: {
+                bar: {
+                    borderRadius: 4,
+                }
+            },
+            cutout: type === 'doughnut' ? '70%' : undefined,
             scales: (type === 'doughnut' || type === 'pie') ? {} : {
                 x: {
                     grid: { display: false },
-                    ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } }
+                    ticks: { 
+                        color: '#807d72',
+                        font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } 
+                    }
                 },
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#f1f5f9' },
-                    ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } }
+                    grid: { color: '#efeee8', drawBorder: false },
+                    ticks: { 
+                        color: '#807d72',
+                        font: { family: "'JetBrains Mono', monospace", size: 11 } 
+                    }
                 }
             }
         };
