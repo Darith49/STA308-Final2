@@ -8,7 +8,8 @@ router = DefaultRouter()
 router.register(r"dashboards", views.DashboardConfigViewSet, basename="dashboard-config")
 
 urlpatterns = [
-    # Template View
+    # Template Views
+    path("dashboard/", views.latest_dashboard_redirect, name="latest-dashboard"),
     path("uploads/<uuid:upload_id>/dashboard/", views.dashboard_view, name="view"),
 
     # DRF API Endpoints

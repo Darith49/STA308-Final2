@@ -68,6 +68,15 @@ def dashboard_view(request, upload_id):
     )
 
 
+@login_required
+def latest_dashboard_redirect(request):
+    """Convenience redirect from /dashboard/ to the user's latest cleaned dataset dashboard."""
+    latest_upload = Upload.objects.filter(owner=request.user, status=UploadStatus.DONE).first()
+    if latest_upload:
+        return redirect("dashboards:view", upload_id=latest_upload.id)
+    return redirect("uploads:list")
+
+
 # --- DRF REST API ENDPOINTS ---
 
 class UploadStatusAPIView(APIView):

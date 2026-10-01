@@ -21,6 +21,9 @@
     <!-- Chart.js 4 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+
     {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -45,6 +48,11 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}" href="{% url 'uploads:list' %}">
                             <i class="bi bi-folder2-open me-1"></i> Datasets
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'latest-dashboard' or request.resolver_match.url_name == 'view' %}active{% endif %}" href="{% url 'dashboards:latest-dashboard' %}">
+                            <i class="bi bi-bar-chart-fill me-1"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
