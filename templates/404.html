@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found (404){% endblock %}
+{% block page_title %}404 - Resource Not Found{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+  <div class="col-md-6 text-center">
+    <div class="p-4 bg-primary-subtle text-primary rounded-circle d-inline-flex mb-4">
+      <i class="fa-solid fa-compass fa-4x"></i>
+    </div>
+    <h2 class="fw-bold mb-2">Page Not Found</h2>
+    <p class="text-muted mb-4">
+      The requested resource or page could not be located on the server.
+    </p>
+    <a href="{% url 'dashboard' %}" class="btn btn-primary px-4 py-2">
+      <i class="fa-solid fa-house me-2"></i> Return to Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

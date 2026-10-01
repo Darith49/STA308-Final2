@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action_title }}{% endblock %}
+{% block page_title %}{{ action_title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+      <div class="d-flex align-items-center gap-3 mb-4 pb-2 border-bottom">
+        <div class="p-3 bg-primary-subtle text-primary rounded-3">
+          <i class="fa-solid fa-user-gear fa-xl"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold mb-0">{{ action_title }}</h5>
+          <small class="text-muted">Configure role-based access permissions</small>
+        </div>
+      </div>
+
+      {% if form.errors %}
+      <div class="alert alert-danger py-2 small">
+        Please correct the errors indicated below.
+      </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="row g-3">
+          {% for field in form %}
+          <div class="col-md-{% if field.name == 'first_name' or field.name == 'last_name' %}6{% elif field.name == 'is_active' %}12{% else %}12{% endif %}">
+            {% if field.name == 'is_active' %}
+            <div class="form-check p-3 bg-light rounded-3 mt-2">
+              {{ field }}
+              <label class="form-check-label fw-semibold small" for="{{ field.id_for_label }}">
+                User Account is Active
+              </label>
+            </div>
+            {% else %}
+            <label class="form-label small fw-semibold text-secondary" for="{{ field.id_for_label }}">
+              {{ field.label }} {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+            <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+            {% endif %}
+            {% if field.help_text %}
+            <small class="text-muted d-block mt-1">{{ field.help_text }}</small>
+            {% endif %}
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+          <a href="{% url 'accounts:user_list' %}" class="btn btn-outline-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary px-4">Save User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

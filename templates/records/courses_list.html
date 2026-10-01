@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses Catalog{% endblock %}
+{% block page_title %}Academic Courses Catalog{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+
+  <!-- Filter Toolbar -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+    <form method="get" class="row g-3 align-items-center">
+      <div class="col-md-5">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Search</label>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Course code or title...">
+        </div>
+      </div>
+
+      {% if is_admin or is_registrar %}
+      <div class="col-md-4">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Department</label>
+        <select name="dept" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Departments</option>
+          {% for dept in departments %}
+          <option value="{{ dept.code }}" {% if selected_dept == dept.code %}selected{% endif %}>{{ dept.code }} - {{ dept.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+      <div class="col d-flex align-items-end justify-content-md-end gap-2">
+        <a href="{% url 'courses_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
+        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Records Table -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="table-responsive">
+      <table class="table table-portal">
+        <thead>
+          <tr>
+            <th>Course Code</th>
+            <th>Title</th>
+            <th>Credits</th>
+            <th>Department</th>
+            <th>Enrolled Students</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for crs in courses %}
+          <tr>
+            <td><strong>{{ crs.code }}</strong></td>
+            <td>{{ crs.title }}</td>
+            <td><span class="badge bg-light text-dark border">{{ crs.credits }} Credits</span></td>
+            <td><span class="badge bg-info-subtle text-info">{{ crs.department.code }} - {{ crs.department.name }}</span></td>
+            <td><span class="fw-semibold text-primary">{{ crs.student_count }} students</span></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center py-5 text-muted">
+              <i class="fa-solid fa-book fa-3x mb-3 text-secondary d-block"></i>
+              No courses found matching your criteria.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} courses</small>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&dept={{ selected_dept }}">&laquo;</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&dept={{ selected_dept }}">&raquo;</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

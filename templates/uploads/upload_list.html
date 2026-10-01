@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload History{% endblock %}
+{% block page_title %}Spreadsheet Upload History{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+
+  <!-- Filter Toolbar -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+    <form method="get" class="row g-3 align-items-center">
+      <div class="col-md-4">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Dataset Type</label>
+        <select name="dataset_type" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Dataset Types</option>
+          {% for dt_val, dt_label in dataset_types %}
+          <option value="{{ dt_val }}" {% if selected_type == dt_val %}selected{% endif %}>{{ dt_label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Status</label>
+        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          {% for st_val, st_label in status_choices %}
+          <option value="{{ st_val }}" {% if selected_status == st_val %}selected{% endif %}>{{ st_label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-4 d-flex align-items-end justify-content-md-end gap-2">
+        <a href="{% url 'uploads:upload_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
+        <a href="{% url 'uploads:upload_create' %}" class="btn btn-sm btn-primary">
+          <i class="fa-solid fa-plus me-1"></i> New Upload
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Uploads Table Card -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="table-responsive">
+      <table class="table table-portal">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Dataset</th>
+            <th>File Name</th>
+            <th>Uploaded By</th>
+            <th>Date & Time</th>
+            <th>Status</th>
+            <th>Cleaned / Rejected</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for up in uploads %}
+          <tr>
+            <td><strong>#{{ up.id }}</strong></td>
+            <td>
+              <span class="badge bg-light text-dark border">
+                {% if up.dataset_type == 'students' %}<i class="fa-solid fa-user-graduate text-primary me-1"></i>
+                {% elif up.dataset_type == 'courses' %}<i class="fa-solid fa-book-open text-info me-1"></i>
+                {% elif up.dataset_type == 'grades' %}<i class="fa-solid fa-award text-warning me-1"></i>
+                {% elif up.dataset_type == 'attendance' %}<i class="fa-solid fa-calendar-check text-success me-1"></i>
+                {% endif %}
+                {{ up.get_dataset_type_display }}
+              </span>
+            </td>
+            <td>
+              <div class="fw-semibold text-truncate" style="max-width: 220px;" title="{{ up.original_filename }}">
+                {{ up.original_filename|default:up.file.name }}
+              </div>
+            </td>
+            <td>
+              <div class="small fw-semibold">{{ up.uploaded_by.username }}</div>
+              <span class="badge badge-role badge-role-{{ up.uploaded_by.profile.role|default:'admin' }}" style="font-size: 0.65rem;">
+                {{ up.uploaded_by.profile.get_role_display|default:'Admin' }}
+              </span>
+            </td>
+            <td class="small text-muted">{{ up.uploaded_at|date:"Y-m-d H:i" }}</td>
+            <td>
+              <span class="badge badge-status-{{ up.status }}">
+                {% if up.status == 'done' %}<i class="fa-solid fa-circle-check me-1"></i>
+                {% elif up.status == 'processing' %}<i class="fa-solid fa-spinner fa-spin me-1"></i>
+                {% elif up.status == 'failed' %}<i class="fa-solid fa-circle-xmark me-1"></i>
+                {% else %}<i class="fa-solid fa-clock me-1"></i>
+                {% endif %}
+                {{ up.get_status_display }}
+              </span>
+            </td>
+            <td>
+              <span class="text-success fw-bold">{{ up.rows_ok }}</span>
+              <span class="text-muted">/</span>
+              <span class="{% if up.rows_rejected > 0 %}text-danger fw-bold{% else %}text-muted{% endif %}">{{ up.rows_rejected }}</span>
+            </td>
+            <td class="text-end">
+              <div class="btn-group">
+                <a href="{% url 'uploads:upload_detail' up.id %}" class="btn btn-sm btn-outline-primary" title="View Report">
+                  <i class="fa-solid fa-file-lines me-1"></i> Report
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="text-center py-5 text-muted">
+              <i class="fa-solid fa-folder-open fa-3x mb-3 text-secondary d-block"></i>
+              No uploads found matching your filter criteria.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} uploads</small>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}

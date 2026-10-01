@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Report #{{ upload.id }}{% endblock %}
+{% block page_title %}Ingestion & Cleaning Report #{{ upload.id }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+
+  <!-- Status / Action Header Card -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <span class="badge badge-status-{{ upload.status }} fs-6" id="upload-status-badge">
+            {{ upload.get_status_display }}
+          </span>
+          <span class="badge bg-light text-dark border">
+            {{ upload.get_dataset_type_display }}
+          </span>
+          <span class="text-muted small">SHA256: <code class="small">{{ upload.file_hash|slice:":12" }}...</code></span>
+        </div>
+        <h5 class="fw-bold mb-0 text-dark">{{ upload.original_filename|default:upload.file.name }}</h5>
+        <small class="text-muted">
+          Uploaded by <strong>{{ upload.uploaded_by.username }}</strong> on {{ upload.uploaded_at|date:"Y-m-d H:i:s" }}
+        </small>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        {% if upload.errors.exists %}
+        <a href="{% url 'uploads:export_errors' upload.id %}" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
+          <i class="fa-solid fa-file-excel"></i>
+          <span>Download Error XLSX ({{ upload.rows_rejected }})</span>
+        </a>
+        {% endif %}
+
+        {% if can_delete %}
+        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+          <i class="fa-solid fa-trash-can me-1"></i> Rollback Upload
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Live Progress Bar if processing -->
+    {% if upload.status == 'processing' or upload.status == 'pending' %}
+    <div class="mt-4 p-3 bg-light rounded-3" id="upload-processing-alert">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <span class="small fw-bold text-primary"><i class="fa-solid fa-spinner fa-spin me-2"></i> Cleaning pipeline running...</span>
+        <span class="small text-muted" id="upload-progress-text">{{ upload.progress_percent }}% completed</span>
+      </div>
+      <div class="progress" style="height: 8px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="upload-progress-bar" role="progressbar" style="width: {{ upload.progress_percent }}%;"></div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if upload.error_message %}
+    <div class="alert alert-danger mt-3 mb-0 small">
+      <strong>Pipeline Error:</strong> {{ upload.error_message }}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Cleaning Report Metric KPI Cards -->
+  <div class="row g-3">
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <span class="stat-label">Total Rows Input</span>
+        <div class="stat-value text-dark">{{ upload.rows_in }}</div>
+        <small class="text-muted">Raw spreadsheet rows</small>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <span class="stat-label">Successfully Saved</span>
+        <div class="stat-value text-success">{{ upload.rows_ok }}</div>
+        <small class="text-muted">Cleaned & committed</small>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <span class="stat-label">Rejected Rows</span>
+        <div class="stat-value {% if upload.rows_rejected > 0 %}text-danger{% else %}text-muted{% endif %}">
+          {{ upload.rows_rejected }}
+        </div>
+        <small class="text-muted">Stored in error log</small>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <span class="stat-label">Duplicates Removed</span>
+        <div class="stat-value text-primary">
+          {{ upload.report.duplicates_removed|default:0 }}
+        </div>
+        <small class="text-muted">Kept latest record</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Pipeline Report Breakdown -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <h6 class="fw-bold mb-3 text-dark">
+      <i class="fa-solid fa-wand-magic-sparkles text-primary me-2"></i> Automatic Cleaning Summary
+    </h6>
+    <div class="row g-3 text-center">
+      <div class="col-6 col-md-3">
+        <div class="p-3 bg-light rounded-3">
+          <div class="fw-bold text-dark fs-5">{{ upload.report.empty_rows_removed|default:0 }}</div>
+          <small class="text-muted">Empty Rows Dropped</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="p-3 bg-light rounded-3">
+          <div class="fw-bold text-dark fs-5">{{ upload.report.categories_standardized|default:0 }}</div>
+          <small class="text-muted">Categories Standardized</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="p-3 bg-light rounded-3">
+          <div class="fw-bold text-dark fs-5">{{ upload.report.values_adjusted|default:0 }}</div>
+          <small class="text-muted">Values Adjusted / Defaulted</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="p-3 bg-light rounded-3">
+          <div class="fw-bold text-dark fs-5">{{ upload.rows_rejected|default:0 }}</div>
+          <small class="text-muted">Constraint Violations</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Errors & Rejected Rows Table -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h6 class="fw-bold mb-0 text-dark">
+          <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Rejected Rows & Warning Log
+        </h6>
+        <small class="text-muted">Every rejected cell is traceable to its original Excel row number</small>
+      </div>
+      {% if upload.errors.exists %}
+      <a href="{% url 'uploads:export_errors' upload.id %}" class="btn btn-sm btn-outline-danger">
+        <i class="fa-solid fa-download me-1"></i> Export Error Spreadsheet
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-portal">
+        <thead>
+          <tr>
+            <th style="width: 100px;">Excel Row</th>
+            <th style="width: 150px;">Column</th>
+            <th style="width: 200px;">Given Value</th>
+            <th>Error / Rejection Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for err in sample_errors %}
+          <tr>
+            <td><strong>Row {{ err.row_number }}</strong></td>
+            <td><code class="text-dark bg-light px-2 py-1 rounded">{{ err.column|default:'-' }}</code></td>
+            <td><span class="text-muted font-monospace small">{{ err.value|default:'<empty>' }}</span></td>
+            <td><span class="text-danger small fw-semibold">{{ err.message }}</span></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center py-4 text-success">
+              <i class="fa-solid fa-circle-check fa-2x mb-2 d-block"></i>
+              No rejection errors! All data in this spreadsheet conformed to validation rules.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if has_more_errors %}
+    <div class="text-center text-muted small pt-2 border-top">
+      Showing first 50 errors. Download the full error XLSX to view all {{ total_errors }} rejected records.
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Rollback / Delete Confirmation Modal -->
+{% if can_delete %}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold text-danger" id="deleteModalLabel">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i> Rollback Upload #{{ upload.id }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">Are you sure you want to completely roll back and delete this upload?</p>
+        <div class="alert alert-warning small mb-0">
+          <strong>Cascade Warning:</strong> This will delete all <strong>{{ upload.rows_ok }}</strong> records that were imported into the database from this file. This action cannot be undone.
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="{% url 'uploads:upload_delete' upload.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Yes, Roll Back & Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if upload.status == 'processing' or upload.status == 'pending' %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.initUploadPoller({{ upload.id }});
+  });
+</script>
+{% endif %}
+{% endblock %}

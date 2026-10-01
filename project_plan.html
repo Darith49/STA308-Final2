@@ -1,0 +1,641 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}</style><style>:root{color-scheme:light dark;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}}:root[data-theme="dark"]{color-scheme:dark;--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}:root[data-theme="light"]{color-scheme:light}@media print{:root,:root[data-theme="dark"]{color-scheme:light;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}}body{background:var(--md-bg);color:var(--md-text);max-width:720px;margin:0 auto;padding:32px;display:flex;flex-direction:column;gap:10px;font:14px/1.55 -apple-system,BlinkMacSystemFont,'SF Pro','Segoe UI',sans-serif;overflow-wrap:break-word}body>:first-child{margin-top:0}h1,h2,h3,h4,h5,h6{margin:6px 0 0;line-height:1.25;font-weight:600;text-wrap:balance}h1{font-size:1.35em}h2{font-size:1.15em;color:var(--md-muted)}h3,h4,h5,h6{font-size:1em}p,ul,ol,blockquote,table,pre,hr{margin:0}strong{font-weight:600}a{color:var(--md-link);text-decoration:none}a:hover{text-decoration:underline}ul,ol{display:flex;flex-direction:column;gap:6px;padding-left:22px}ul{list-style:disc}ol{list-style:decimal}:is(li,td,th)>*+:is(p,ul,ol,blockquote){margin-top:6px}blockquote{display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--md-rule);padding-left:10px;color:var(--md-muted)}:not(pre)>code{background:var(--md-fill);padding:1px 3px;border-radius:4px;font:.92em 'SF Mono',ui-monospace,Menlo,Consolas,monospace}a>code{background:none;color:inherit}pre{background:var(--md-fill);padding:10px 12px;border-radius:6px;overflow-x:auto;font:12px/1.5 'SF Mono',ui-monospace,Menlo,Consolas,monospace;margin-block:4px}pre code{background:none;padding:0;font:inherit}table{width:100%;border-collapse:separate;border-spacing:2px;font:inherit}th,td{padding:6px 8px;border-radius:3px;text-align:left;vertical-align:top}th{background:var(--md-fill-strong);font-weight:600}td{background:var(--md-fill)}:is(th,td) :not(pre)>code{background:transparent}hr{border:0;border-top:1px solid var(--md-rule-strong);margin-block:10px}img{max-width:100%;height:auto;border-radius:4px}</style>
+</head><body>
+<h1>University Data Portal: Complete Project Plan</h1>
+<p><strong>Pitch:</strong> <em>From messy Excel files to trusted, visual insights in one click.</em>
+<strong>Assumptions:</strong> solo or 2-person team, 8 weeks, Django 5 + PostgreSQL, Chart.js as the core charting, Superset optional. Change these if your instructor says otherwise.</p>
+<hr>
+<h2>1. Overview</h2>
+<p><strong>Problem:</strong> Universities keep student, grade and attendance data in inconsistent Excel files (typos, duplicates, mixed formats). Analysis is slow and error-prone.</p>
+<p><strong>Solution:</strong> A role-based web portal where staff upload XLSX files; the backend validates and cleans them, stores clean data, reports what it fixed, and powers live dashboards.</p>
+<p><strong>Objectives</strong></p>
+<ol>
+<li>Secure login with role-based access</li>
+<li>XLSX upload with strict validation</li>
+<li>Automatic, explainable cleaning (every change reported)</li>
+<li>Normalized database with traceability to the source upload</li>
+<li>Role-scoped dashboards with live Chart.js charts</li>
+<li>Tested, documented, deployed system</li>
+</ol>
+<p><strong>Out of scope:</strong> arbitrary spreadsheet layouts (fixed templates only), mobile app, payments, real student information system integration.</p>
+<hr>
+<h2>2. Users and Permissions</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Upload</th>
+<th>View all data</th>
+<th>View own dept</th>
+<th>Manage users</th>
+<th>Delete uploads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Admin</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Registrar (data officer)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Own only</td>
+</tr>
+<tr>
+<td>Dept Head / Lecturer</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Student (stretch)</td>
+<td>No</td>
+<td>No</td>
+<td>Own record only</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Implementation: Django Groups + <code>Profile(user, role, department)</code>. Enforce through a reusable mixin/decorator on <strong>every</strong> view and API endpoint. Never rely on hiding buttons in templates.</p>
+<hr>
+<h2>3. Requirements</h2>
+<p><strong>Functional</strong></p>
+<ul>
+<li>FR1 Register/login/logout, password reset, admin creates users</li>
+<li>FR2 Download template per dataset type</li>
+<li>FR3 Upload XLSX (Students, Courses, Grades, Attendance)</li>
+<li>FR4 Validate file: extension, size ≤ 5 MB, opens with openpyxl, required headers present</li>
+<li>FR5 Clean data automatically per dataset type</li>
+<li>FR6 Save valid rows; store rejected rows with reason</li>
+<li>FR7 Cleaning report page and downloadable error XLSX</li>
+<li>FR8 Upload history with status (pending, processing, done, failed)</li>
+<li>FR9 Dashboards with KPIs and charts, filters by department/semester/program</li>
+<li>FR10 Searchable, paginated record tables with CSV export</li>
+<li>FR11 Delete an upload and roll back its rows</li>
+<li>FR12 Audit log of uploads and deletions</li>
+</ul>
+<p><strong>Non-functional:</strong> page loads &lt; 2 s on 10k rows; 5k-row file processed in &lt; 30 s; passwords hashed; HTTPS in production; 80%+ test coverage on cleaners; responsive layout.</p>
+<hr>
+<h2>4. Architecture</h2>
+<pre><code>Browser (Bootstrap + Chart.js)
+   │  upload / fetch JSON
+   ▼
+Django (views, forms, DRF API, permissions)
+   │                 │
+   ▼                 ▼
+Celery task      PostgreSQL ◄── (optional) Superset
+(pandas clean → importer)
+   │
+Redis (broker)
+</code></pre>
+<p><strong>Stack</strong></p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend</td>
+<td>Django 5, Django REST Framework</td>
+<td>auth, ORM, admin built in</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>pandas, openpyxl</td>
+<td>read and clean XLSX</td>
+</tr>
+<tr>
+<td>DB</td>
+<td>PostgreSQL (SQLite for week 1-2 only)</td>
+<td>real aggregation, Superset-compatible</td>
+</tr>
+<tr>
+<td>Async</td>
+<td>Celery + Redis (stretch: start synchronous)</td>
+<td>non-blocking imports</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>Bootstrap 5, Chart.js, vanilla <code>fetch</code></td>
+<td>simple, no build step</td>
+</tr>
+<tr>
+<td>Deploy</td>
+<td>Docker Compose; Render/Railway/VPS</td>
+<td>reproducible</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>pytest-django, factory_boy</td>
+<td>fast, readable</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Decision:</strong> build the importer synchronously first, wrap it in a Celery task later. This protects your MVP.</p>
+<hr>
+<h2>5. Data Model</h2>
+<pre><code>Department ──&lt; Program ──&lt; Student &gt;──&lt; Enrollment &gt;── Course &gt;── Department
+                              └──&lt; Attendance &gt;── Course
+User ── Profile (role, department)
+Upload ──&lt; UploadError
+(every imported row has upload FK)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Key fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Department</td>
+<td>code (unique), name</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>name, department FK, duration_years</td>
+</tr>
+<tr>
+<td>Course</td>
+<td>code (unique), title, credits, department FK</td>
+</tr>
+<tr>
+<td>Student</td>
+<td>student_id (unique), name, gender, program FK, year, enrollment_date, email</td>
+</tr>
+<tr>
+<td>Enrollment</td>
+<td>student FK, course FK, semester, score, grade_letter, upload FK; unique (student, course, semester)</td>
+</tr>
+<tr>
+<td>Attendance</td>
+<td>student FK, course FK, date, status (P/A/L), upload FK</td>
+</tr>
+<tr>
+<td>Upload</td>
+<td>file, file_hash, dataset_type, uploaded_by, uploaded_at, status, report JSON, rows_in, rows_ok, rows_rejected</td>
+</tr>
+<tr>
+<td>UploadError</td>
+<td>upload FK, row_number, column, value, message</td>
+</tr>
+<tr>
+<td>AuditLog</td>
+<td>user, action, target, timestamp</td>
+</tr>
+</tbody>
+</table>
+<p>Indexes on <code>student_id</code>, <code>(course, semester)</code>, <code>(course, date)</code>, <code>upload</code>. Use <code>on_delete=CASCADE</code> from Upload so rollback is one delete.</p>
+<hr>
+<h2>6. Spreadsheet Templates</h2>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Required columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Students</td>
+<td>student_id, name, gender, department, program, year, enrollment_date, email</td>
+</tr>
+<tr>
+<td>Courses</td>
+<td>course_code, title, credits, department</td>
+</tr>
+<tr>
+<td>Grades</td>
+<td>student_id, course_code, semester, score</td>
+</tr>
+<tr>
+<td>Attendance</td>
+<td>student_id, course_code, date, status</td>
+</tr>
+</tbody>
+</table>
+<p>Provide each as a downloadable XLSX with a header row, an example row and a &quot;Notes&quot; sheet explaining the format. <strong>Import order:</strong> Departments/Programs → Courses → Students → Grades → Attendance (foreign keys must exist).</p>
+<hr>
+<h2>7. Cleaning Pipeline</h2>
+<p>Location: <code>services/cleaners/</code> (base + one cleaner per dataset) and <code>services/importers.py</code>. Cleaners are pure functions: DataFrame in, <code>(clean_df, errors, report)</code> out. No Django imports, so they are easy to test.</p>
+<p><strong>Stage 1: structural (base cleaner)</strong></p>
+<ol>
+<li>Normalize headers: strip, lowercase, spaces → underscores, map known aliases (&quot;Student ID&quot;, &quot;ID No&quot; → <code>student_id</code>)</li>
+<li>Drop fully empty rows/columns</li>
+<li>Trim whitespace in all text cells</li>
+<li>Remove duplicate rows (by business key), keep last, count them</li>
+</ol>
+<p><strong>Stage 2: type conversion</strong></p>
+<ul>
+<li>Numbers: <code>pd.to_numeric(errors=&quot;coerce&quot;)</code></li>
+<li>Dates: <code>pd.to_datetime(errors=&quot;coerce&quot;, dayfirst=&lt;configurable&gt;)</code></li>
+<li>Text: title-case names, upper-case codes</li>
+</ul>
+<p><strong>Stage 3: standardization</strong></p>
+<ul>
+<li>Category maps: <code>{&quot;cs&quot;: &quot;Computer Science&quot;, &quot;comp sci&quot;: ..., &quot;m&quot;: &quot;Male&quot;, &quot;f&quot;: &quot;Female&quot;}</code></li>
+<li>Attendance: <code>present/p/1</code> → P, <code>absent/a/0</code> → A, <code>late/l</code> → L</li>
+</ul>
+<p><strong>Stage 4: validation (row-level, errors are stored not silently dropped)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>student_id missing</td>
+<td>reject row</td>
+</tr>
+<tr>
+<td>score outside 0-100</td>
+<td>reject row</td>
+</tr>
+<tr>
+<td>year outside 1-6</td>
+<td>set null + warning</td>
+</tr>
+<tr>
+<td>email malformed</td>
+<td>set null + warning</td>
+</tr>
+<tr>
+<td>date in the future</td>
+<td>reject row</td>
+</tr>
+<tr>
+<td>unknown student/course FK</td>
+<td>reject row</td>
+</tr>
+<tr>
+<td>missing gender/program</td>
+<td>fill &quot;Unknown&quot; (documented)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Missing-value policy (write this in your report):</strong> identifiers → reject; critical numeric (score) → reject; optional categorical → &quot;Unknown&quot;; never fill scores with averages because it distorts analysis.</p>
+<p><strong>Stage 5: import</strong>
+<code>transaction.atomic()</code> → <code>bulk_create(batch_size=500)</code> → save <code>UploadError</code> rows → write report → set status.</p>
+<p><strong>Report JSON example</strong></p>
+<pre><code class="language-json">{&#34;rows_in&#34;: 1200, &#34;empty_rows_removed&#34;: 14, &#34;duplicates_removed&#34;: 22,
+ &#34;invalid_scores&#34;: 9, &#34;unknown_students&#34;: 3, &#34;dates_fixed&#34;: 41,
+ &#34;categories_standardized&#34;: 67, &#34;rows_ok&#34;: 1148, &#34;rows_rejected&#34;: 52}
+</code></pre>
+<p><strong>Extras:</strong> file-hash duplicate detection (&quot;this file was already imported&quot;); preview of the first 20 cleaned rows before confirming (stretch); downloadable error XLSX.</p>
+<hr>
+<h2>8. Pages and Navigation</h2>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Roles</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Login / reset</td>
+<td>all</td>
+<td>form, errors</td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td>all (scoped)</td>
+<td>KPI cards, 4-6 charts, filters</td>
+</tr>
+<tr>
+<td>Upload</td>
+<td>Admin, Registrar</td>
+<td>type selector, template link, file input, progress</td>
+</tr>
+<tr>
+<td>Upload history</td>
+<td>Admin, Registrar</td>
+<td>table with status badge, filters</td>
+</tr>
+<tr>
+<td>Upload detail</td>
+<td>Admin, Registrar</td>
+<td>cleaning report, error table, error download, delete</td>
+</tr>
+<tr>
+<td>Students</td>
+<td>all (scoped)</td>
+<td>search, filters, pagination, export</td>
+</tr>
+<tr>
+<td>Courses / Grades</td>
+<td>all (scoped)</td>
+<td>tables with filters</td>
+</tr>
+<tr>
+<td>Analytics</td>
+<td>all (scoped)</td>
+<td>enrollment, performance, attendance tabs</td>
+</tr>
+<tr>
+<td>Users admin</td>
+<td>Admin</td>
+<td>CRUD users, assign role and department</td>
+</tr>
+<tr>
+<td>Profile</td>
+<td>all</td>
+<td>name, password change</td>
+</tr>
+</tbody>
+</table>
+<p>Build one <code>base.html</code> with sidebar (menu items rendered by role), top bar, flash messages. Wireframe all pages in Figma/Excalidraw in week 1.</p>
+<hr>
+<h2>9. API Design</h2>
+<pre><code>GET /api/kpis/?dept=&amp;semester=
+GET /api/charts/students-by-department/
+GET /api/charts/year-distribution/
+GET /api/charts/enrollment-trend/
+GET /api/charts/grade-distribution/?course=&amp;semester=
+GET /api/charts/pass-rate-by-course/?semester=
+GET /api/charts/attendance-trend/?course=
+GET /api/uploads/&lt;id&gt;/status/
+</code></pre>
+<p>Rules: every queryset passes through <code>scope_for(user)</code>, which filters by department for non-admin roles. Return <code>{labels: [], datasets: [...]}</code> so the JS is generic. Use <code>annotate/aggregate</code>, <code>select_related</code>, and short caching (30-60 s) for expensive charts.</p>
+<hr>
+<h2>10. Dashboards</h2>
+<p><strong>Admin/Registrar:</strong> KPI cards (students, courses, avg score, uploads this month, last upload status); bar (students per department); doughnut (gender or year); line (enrollment by year); table (recent uploads).</p>
+<p><strong>Department Head:</strong> histogram (score distribution), bar (pass rate by course), line (attendance over weeks), top/bottom 5 courses table.</p>
+<p><strong>&quot;Live&quot; behavior:</strong> (1) polling <code>/status/</code> every 3 s during processing, then <code>chart.update()</code> with new data; (2) filter changes re-fetch via <code>fetch()</code>; (3) stretch: Django Channels pushes <code>upload_done</code> to open dashboards.</p>
+<p><strong>Superset (optional page &quot;Advanced analytics&quot;):</strong> Docker service reading the same PostgreSQL; create read-only DB user and 2-3 dashboards; embed via iframe or the embedded SDK. Check current Superset docs for guest-token setup, as it varies by version. Start only after MVP is stable.</p>
+<hr>
+<h2>11. Security Checklist</h2>
+<ul>
+<li>Django auth, <code>LOGIN_REQUIRED</code> default via middleware</li>
+<li>Server-side role checks on all endpoints; test them</li>
+<li>Validate uploads: extension, MIME sniffing, size, cell count limit, openpyxl open in <code>read_only=True</code></li>
+<li>Store uploads outside static/public paths; randomize filenames</li>
+<li>Reject XLSX with macros or external links (.xlsm not accepted)</li>
+<li>Prevent formula injection on export (prefix cells starting with <code>=,+,-,@</code> with <code>'</code>)</li>
+<li>CSRF, secure cookies, <code>DEBUG=False</code>, <code>ALLOWED_HOSTS</code>, HTTPS, secrets in <code>.env</code></li>
+<li>Login rate limiting (django-axes)</li>
+<li>Audit log; regular DB backups</li>
+</ul>
+<hr>
+<h2>12. Repository Structure</h2>
+<pre><code>portal/
+├── config/ (settings/base.py, dev.py, prod.py, urls.py, celery.py)
+├── accounts/       # Profile, roles, permissions mixins
+├── academics/      # Department, Program, Course, Student, Enrollment, Attendance
+├── uploads/        # Upload, UploadError, forms, views, tasks
+├── analytics/      # API views, scope_for(), serializers
+├── services/
+│   ├── cleaners/ (base.py, students.py, courses.py, grades.py, attendance.py)
+│   ├── importers.py
+│   └── templates_xlsx.py
+├── templates/  static/ (css, js/charts.js)
+├── tests/ (cleaners/, views/, api/)
+├── sample_data/ (clean + messy files, generator script)
+├── docker-compose.yml  Dockerfile  requirements.txt  .env.example  README.md
+</code></pre>
+<p>Git workflow: <code>main</code> stable, feature branches (<code>feature/grades-cleaner</code>), small commits, tag <code>v0.1</code> per milestone.</p>
+<hr>
+<h2>13. Week-by-Week Plan (with tasks)</h2>
+<p><strong>Week 1: Foundations</strong></p>
+<ul>
+<li>Confirm scope, Superset requirement, team roles with supervisor</li>
+<li>Write role matrix, use cases, ER diagram, wireframes</li>
+<li>Create 4 clean sample XLSX files and 4 <strong>deliberately messy</strong> versions (blanks, duplicates, &quot;N/A&quot; in numbers, mixed date formats, aliases, unknown IDs, scores like 105)</li>
+<li>Init repo, venv, Django project, apps, <code>.env</code>, PostgreSQL, pre-commit (black, flake8)</li>
+<li><em>Done when:</em> project runs, docs folder has diagrams</li>
+</ul>
+<p><strong>Week 2: Auth and academic core</strong></p>
+<ul>
+<li>Profile + groups, login/logout/reset, role mixins</li>
+<li>Models + migrations for academic tables</li>
+<li>Admin CRUD for Department/Program/Course; base layout + sidebar</li>
+<li>Tests: permission tests for each role</li>
+<li><em>Done when:</em> three seeded users see different menus</li>
+</ul>
+<p><strong>Week 3: Upload and Students cleaner</strong></p>
+<ul>
+<li>Upload model/form, validators, template downloads</li>
+<li><code>base.py</code> + <code>students.py</code> cleaner, 15+ unit tests</li>
+<li>Importer with <code>bulk_create</code>, error rows, report JSON</li>
+<li><em>Done when:</em> messy students file imports with accurate report</li>
+</ul>
+<p><strong>Week 4: Courses, Grades, history</strong></p>
+<ul>
+<li>Courses and Grades cleaners with FK checks</li>
+<li>Upload history, detail/report page, error XLSX download</li>
+<li>File-hash duplicate warning, delete-with-rollback, audit log</li>
+<li><em>Done when:</em> full import chain works in correct order</li>
+</ul>
+<p><strong>Week 5: API and first charts</strong></p>
+<ul>
+<li><code>scope_for()</code>, KPI + 4 chart endpoints, API tests</li>
+<li><code>charts.js</code> generic renderer, dashboard page with KPI cards and 4 charts</li>
+<li><em>Done when:</em> charts show real imported data</li>
+</ul>
+<p><strong>Week 6: Dashboards, filters, records</strong></p>
+<ul>
+<li>Role-specific dashboards, filters, remaining charts</li>
+<li>Records tables: search, pagination, CSV export</li>
+<li>Celery + Redis background import and status polling with progress bar</li>
+<li><em>Done when:</em> upload → live dashboard update works end-to-end</li>
+</ul>
+<p><strong>Week 7: Attendance, hardening, deployment</strong></p>
+<ul>
+<li>Attendance cleaner and chart (if time)</li>
+<li>Security checklist, error pages (403/404/500), loading/empty states</li>
+<li>Performance test with 10k rows, add indexes</li>
+<li>Dockerize and deploy; run on production data copy</li>
+<li><em>Done when:</em> public URL works with HTTPS</li>
+</ul>
+<p><strong>Week 8: Stretch, docs, defense</strong></p>
+<ul>
+<li>Superset page (only if stable) or student view</li>
+<li>README, user manual with screenshots, API docs, final report</li>
+<li>Record backup demo video; rehearse 2 times with timer</li>
+<li>Freeze code 3 days before defense</li>
+</ul>
+<p><strong>Buffer rule:</strong> if a week slips, cut Attendance, Superset, WebSockets, then the Student role (in that order). Never cut tests or the cleaning report.</p>
+<hr>
+<h2>14. Testing Strategy</h2>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>What</th>
+<th>Tools</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit</td>
+<td>each cleaning rule with tiny DataFrames</td>
+<td>pytest</td>
+</tr>
+<tr>
+<td>Integration</td>
+<td>upload → import → DB counts</td>
+<td>Django test client</td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td>each role × each URL/API (matrix test)</td>
+<td>parametrized pytest</td>
+</tr>
+<tr>
+<td>API</td>
+<td>response shape, scoping, filters</td>
+<td>DRF APIClient</td>
+</tr>
+<tr>
+<td>UI/manual</td>
+<td>checklist with screenshots, 3 browsers</td>
+<td>manual</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>10k-row file timing, query count</td>
+<td><code>assertNumQueries</code></td>
+</tr>
+<tr>
+<td>Security</td>
+<td>oversized, wrong type, renamed .exe, formula cells</td>
+<td>manual + tests</td>
+</tr>
+</tbody>
+</table>
+<p>Target: 80%+ coverage on <code>services/</code>, a test for every role-permission pair, and a test log table in your report.</p>
+<hr>
+<h2>15. Deployment</h2>
+<ol>
+<li><code>docker-compose</code> with web (gunicorn), db, redis, celery worker, nginx</li>
+<li>Environment variables for secrets and DB URL</li>
+<li>WhiteNoise for static files; media on a private volume</li>
+<li><code>collectstatic</code>, migrations, seed command (<code>python manage.py seed_demo</code>)</li>
+<li>Daily DB backup script; log to stdout</li>
+<li>Smoke-test checklist after deploy</li>
+</ol>
+<hr>
+<h2>16. Risks and Mitigations</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Superset setup eats time</td>
+<td>High</td>
+<td>defer to week 8, MVP uses Chart.js</td>
+</tr>
+<tr>
+<td>Scope creep (arbitrary columns)</td>
+<td>High</td>
+<td>fixed templates, list as future work</td>
+</tr>
+<tr>
+<td>Slow imports</td>
+<td>Medium</td>
+<td>bulk_create, Celery, indexes</td>
+</tr>
+<tr>
+<td>No realistic data for demo</td>
+<td>High</td>
+<td>data generator script (Faker), done week 1</td>
+</tr>
+<tr>
+<td>Permission leaks</td>
+<td>High</td>
+<td><code>scope_for()</code> plus matrix tests</td>
+</tr>
+<tr>
+<td>Deployment failure at the end</td>
+<td>High</td>
+<td>deploy by week 7, backup video</td>
+</tr>
+<tr>
+<td>Team member/time loss</td>
+<td>Medium</td>
+<td>weekly checkpoints, written task board</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>17. Defense Preparation</h2>
+<p><strong>Demo script (8 min)</strong></p>
+<ol>
+<li>Problem + architecture slide (1 min)</li>
+<li>Admin dashboard with existing data (1 min)</li>
+<li>Registrar uploads messy Grades file (1 min)</li>
+<li>Status changes → cleaning report (&quot;22 duplicates, 9 invalid scores, 3 unknown students&quot;) (2 min)</li>
+<li>Download error file, show dashboard update (1 min)</li>
+<li>Dept Head login shows only their department (1 min)</li>
+<li>Tests, deployment, limitations (1 min)</li>
+</ol>
+<p><strong>Likely questions:</strong> Why fixed templates? How do you prevent bad data from reaching charts? How do you secure uploads? How does it scale? Why Chart.js over Superset? Prepare a one-line answer for each.</p>
+<hr>
+<h2>18. Final Report Outline</h2>
+<ol>
+<li>Abstract, introduction, problem statement, objectives, scope</li>
+<li>Literature/related systems review (data portals, ETL, BI tools)</li>
+<li>Requirements (functional, non-functional, role matrix)</li>
+<li>Design (architecture, ER diagram, use case, sequence diagram of upload, UI wireframes)</li>
+<li>Implementation (stack, cleaning rules table, API, chart code, security)</li>
+<li>Testing (strategy, results table, coverage)</li>
+<li>Deployment and user manual</li>
+<li>Results (before/after cleaning stats, performance numbers)</li>
+<li>Limitations and future work (dynamic schemas, WebSockets, Superset, predictive analytics, SIS integration)</li>
+<li>Conclusion, references, appendices</li>
+</ol>
+<hr>
+<h2>19. Master Checklist</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Scope and Superset requirement confirmed</li>
+<li><input disabled="" type="checkbox"> Role matrix, ER diagram, wireframes</li>
+<li><input disabled="" type="checkbox"> Clean and messy sample data + generator</li>
+<li><input disabled="" type="checkbox"> Auth, roles, sidebar layout</li>
+<li><input disabled="" type="checkbox"> Academic models and admin CRUD</li>
+<li><input disabled="" type="checkbox"> Upload validation and templates</li>
+<li><input disabled="" type="checkbox"> Cleaners: Students, Courses, Grades (+ Attendance)</li>
+<li><input disabled="" type="checkbox"> Importer, error rows, report, error download</li>
+<li><input disabled="" type="checkbox"> Upload history, rollback, audit log</li>
+<li><input disabled="" type="checkbox"> API with scoping + tests</li>
+<li><input disabled="" type="checkbox"> Admin and Dept dashboards with filters</li>
+<li><input disabled="" type="checkbox"> Records tables with export</li>
+<li><input disabled="" type="checkbox"> Background processing + status polling</li>
+<li><input disabled="" type="checkbox"> Security checklist complete</li>
+<li><input disabled="" type="checkbox"> Deployed + backup video</li>
+<li><input disabled="" type="checkbox"> README, manual, report, slides</li>
+<li><input disabled="" type="checkbox"> Two full rehearsals</li>
+</ul>
+<hr>
+<h2>20. What to Do This Week</h2>
+<ol>
+<li>Send your supervisor 3 questions: solo or team? Superset mandatory? Real data or generated?</li>
+<li>Draft the ER diagram (draw.io) and role matrix</li>
+<li>Write the Faker script that produces clean + messy sample files</li>
+<li>Set up the repo and run <code>python manage.py runserver</code></li>
+<li>Build the Students cleaner as your first test-driven module</li>
+</ol>
+<p>Start there: the sample data and the Students cleaner prove the core idea early, and everything else builds on them.</p>
+
+</body></html>

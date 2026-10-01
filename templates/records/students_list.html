@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Students Records{% endblock %}
+{% block page_title %}Student Directory{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+
+  <!-- Filter Toolbar -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+    <form method="get" class="row g-3 align-items-center">
+      <div class="col-md-4">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Search</label>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Student ID, name, or email...">
+        </div>
+      </div>
+
+      {% if is_admin or is_registrar %}
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Department</label>
+        <select name="dept" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Departments</option>
+          {% for dept in departments %}
+          <option value="{{ dept.code }}" {% if selected_dept == dept.code %}selected{% endif %}>{{ dept.code }} - {{ dept.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+      <div class="col-md-2">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Year Level</label>
+        <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Years</option>
+          {% for yr in "123456"|make_list %}
+          <option value="{{ yr }}" {% if selected_year == yr %}selected{% endif %}>Year {{ yr }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col d-flex align-items-end justify-content-md-end gap-2">
+        <a href="{% url 'students_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
+        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+        <a href="{% url 'students_export_csv' %}?q={{ search_query }}&dept={{ selected_dept }}&year={{ selected_year }}" class="btn btn-sm btn-outline-success">
+          <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Records Table -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="table-responsive">
+      <table class="table table-portal">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Full Name</th>
+            <th>Gender</th>
+            <th>Department</th>
+            <th>Program</th>
+            <th>Year</th>
+            <th>Enrolled Date</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stu in students %}
+          <tr>
+            <td><strong>{{ stu.student_id }}</strong></td>
+            <td>{{ stu.name }}</td>
+            <td><span class="badge bg-light text-dark border">{{ stu.gender }}</span></td>
+            <td><span class="badge bg-primary-subtle text-primary">{{ stu.program.department.code|default:'-' }}</span></td>
+            <td class="text-truncate" style="max-width: 180px;">{{ stu.program.name|default:'-' }}</td>
+            <td>{% if stu.year %}Year {{ stu.year }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
+            <td class="small text-muted">{{ stu.enrollment_date|date:"Y-m-d"|default:'-' }}</td>
+            <td class="small"><a href="mailto:{{ stu.email }}">{{ stu.email|default:'-' }}</a></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="text-center py-5 text-muted">
+              <i class="fa-solid fa-user-slash fa-3x mb-3 text-secondary d-block"></i>
+              No students found matching your search criteria.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} students</small>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&dept={{ selected_dept }}&year={{ selected_year }}">&laquo;</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&dept={{ selected_dept }}&year={{ selected_year }}">&raquo;</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

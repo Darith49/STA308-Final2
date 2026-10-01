@@ -1,0 +1,303 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Academic Analytics & Insights{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+
+  <!-- Interactive Filter Toolbar -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">
+          <i class="fa-solid fa-filter me-1"></i> Department
+        </label>
+        {% if is_admin or is_registrar %}
+        <select class="form-select form-select-sm" id="filter-dept">
+          <option value="">All Departments (University-wide)</option>
+          {% for dept in departments %}
+          <option value="{{ dept.code }}">{{ dept.code }} - {{ dept.name }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <input type="text" class="form-control form-control-sm bg-light" value="{{ user_department.name|default:'Own Department' }}" readonly disabled>
+        {% endif %}
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">
+          <i class="fa-solid fa-calendar me-1"></i> Semester
+        </label>
+        <select class="form-select form-select-sm" id="filter-semester">
+          <option value="">All Semesters</option>
+          {% for sem in semesters %}
+          <option value="{{ sem }}">{{ sem }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">
+          <i class="fa-solid fa-book-bookmark me-1"></i> Course Focus
+        </label>
+        <select class="form-select form-select-sm" id="filter-course">
+          <option value="">All Courses</option>
+          {% for crs in courses %}
+          <option value="{{ crs.code }}">{{ crs.code }} - {{ crs.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-3 d-flex align-items-end justify-content-md-end gap-2">
+        <button class="btn btn-sm btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2" id="apply-filters-btn">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span>Update Analytics</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Metric Cards -->
+  <div class="row g-3">
+    <div class="col-sm-6 col-xl-3">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="stat-label">Total Students</span>
+          <div class="stat-icon bg-primary-subtle text-primary">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+        </div>
+        <div class="stat-value text-primary" id="kpi-total-students">--</div>
+        <small class="text-muted"><i class="fa-solid fa-check-circle text-success me-1"></i> Cleaned & Verified</small>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="stat-label">Active Courses</span>
+          <div class="stat-icon bg-info-subtle text-info">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+        </div>
+        <div class="stat-value text-info" id="kpi-total-courses">--</div>
+        <small class="text-muted"><i class="fa-solid fa-layer-group text-info me-1"></i> Across faculties</small>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="stat-label">Average Score</span>
+          <div class="stat-icon bg-success-subtle text-success">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+        </div>
+        <div class="stat-value text-success" id="kpi-avg-score">--%</div>
+        <small class="text-muted"><i class="fa-solid fa-arrow-trend-up text-success me-1"></i> Semester performance</small>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <div class="stat-card">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="stat-label">Pass Rate</span>
+          <div class="stat-icon bg-warning-subtle text-warning">
+            <i class="fa-solid fa-award"></i>
+          </div>
+        </div>
+        <div class="stat-value text-warning" id="kpi-pass-rate">--%</div>
+        <small class="text-muted"><i class="fa-solid fa-percent text-warning me-1"></i> Grade &ge; 50%</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Grid Row 1 -->
+  <div class="row g-4">
+    {% if is_admin or is_registrar %}
+    <div class="col-lg-6">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h6 class="chart-title"><i class="fa-solid fa-chart-simple text-primary me-2"></i>Students by Department</h6>
+          <span class="badge bg-light text-muted">Distribution</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="chart-dept"></canvas>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="col-lg-{% if is_admin or is_registrar %}6{% else %}6{% endif %}">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h6 class="chart-title"><i class="fa-solid fa-chart-pie text-accent me-2"></i>Year Level Distribution</h6>
+          <span class="badge bg-light text-muted">Academic Levels</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="chart-year"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h6 class="chart-title"><i class="fa-solid fa-arrow-trend-up text-primary me-2"></i>Enrollment Volume Over Time</h6>
+          <span class="badge bg-light text-muted">Trend</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="chart-enrollment-trend"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h6 class="chart-title"><i class="fa-solid fa-ranking-star text-warning me-2"></i>Grade Distribution (A - F)</h6>
+          <span class="badge bg-light text-muted">Performance</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="chart-grades"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h6 class="chart-title"><i class="fa-solid fa-gauge-high text-success me-2"></i>Course Pass Rates (%)</h6>
+          <span class="badge bg-light text-muted">Course Quality</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="chart-pass-rate"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h6 class="chart-title"><i class="fa-solid fa-user-check text-info me-2"></i>Class Attendance Trend (%)</h6>
+          <span class="badge bg-light text-muted">Engagement</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="chart-attendance"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if is_student %}
+  <!-- Student Personalized View -->
+  <div class="row g-4 mt-2">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-graduation-cap text-primary me-2"></i>My Enrolled Courses & Grades</h5>
+        <div class="table-responsive">
+          <table class="table table-portal">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Semester</th>
+                <th>Score</th>
+                <th>Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for enr in student_enrollments %}
+              <tr>
+                <td><strong>{{ enr.course.code }}</strong> - {{ enr.course.title }}</td>
+                <td>{{ enr.semester }}</td>
+                <td>{{ enr.score }}</td>
+                <td><span class="badge badge-grade-{{ enr.grade_letter|lower }}">{{ enr.grade_letter }}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-muted py-3">No course enrollments found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-calendar-check text-success me-2"></i>Recent Attendance</h5>
+        <div class="table-responsive">
+          <table class="table table-portal">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for att in student_attendance %}
+              <tr>
+                <td>{{ att.course.code }}</td>
+                <td>{{ att.date }}</td>
+                <td><span class="badge badge-att-{{ att.status|lower }}">{{ att.get_status_display }}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-center text-muted py-3">No attendance records found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function getFilterParams() {
+    const deptSelect = document.getElementById('filter-dept');
+    const semSelect = document.getElementById('filter-semester');
+    const crsSelect = document.getElementById('filter-course');
+    return {
+      dept: deptSelect ? deptSelect.value : '',
+      semester: semSelect ? semSelect.value : '',
+      course: crsSelect ? crsSelect.value : ''
+    };
+  }
+
+  function refreshDashboard() {
+    const params = getFilterParams();
+    window.loadKpiSummary(params);
+
+    if (document.getElementById('chart-dept')) {
+      window.loadChart('chart-dept', 'bar', '/api/charts/students-by-department/', params);
+    }
+    window.loadChart('chart-year', 'doughnut', '/api/charts/year-distribution/', params);
+    window.loadChart('chart-enrollment-trend', 'line', '/api/charts/enrollment-trend/', params);
+    window.loadChart('chart-grades', 'bar', '/api/charts/grade-distribution/', params);
+    window.loadChart('chart-pass-rate', 'bar', '/api/charts/pass-rate-by-course/', params, {
+      indexAxis: 'y'
+    });
+    window.loadChart('chart-attendance', 'line', '/api/charts/attendance-trend/', params);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    refreshDashboard();
+
+    const applyBtn = document.getElementById('apply-filters-btn');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', refreshDashboard);
+    }
+
+    ['filter-dept', 'filter-semester', 'filter-course'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('change', refreshDashboard);
+    });
+  });
+</script>
+{% endblock %}

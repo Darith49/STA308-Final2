@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Grades & Enrollments{% endblock %}
+{% block page_title %}Academic Grades & Enrollments{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+
+  <!-- Filter Toolbar -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+    <form method="get" class="row g-3 align-items-center">
+      <div class="col-md-4">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Search</label>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Student ID, name, or course...">
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Semester</label>
+        <select name="semester" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Semesters</option>
+          {% for sem in semesters %}
+          <option value="{{ sem }}" {% if selected_sem == sem %}selected{% endif %}>{{ sem }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label small fw-bold text-muted mb-1 text-uppercase" style="letter-spacing: 0.05em;">Grade</label>
+        <select name="grade" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Grades</option>
+          {% for g in grade_letters %}
+          <option value="{{ g }}" {% if selected_grade == g %}selected{% endif %}>Grade {{ g }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col d-flex align-items-end justify-content-md-end gap-2">
+        <a href="{% url 'grades_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
+        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+        <a href="{% url 'grades_export_csv' %}?q={{ search_query }}&semester={{ selected_sem }}&grade={{ selected_grade }}" class="btn btn-sm btn-outline-success">
+          <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Records Table -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="table-responsive">
+      <table class="table table-portal">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Department</th>
+            <th>Semester</th>
+            <th>Numeric Score</th>
+            <th>Grade</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for enr in enrollments %}
+          <tr>
+            <td>
+              <div class="fw-bold">{{ enr.student.student_id }}</div>
+              <div class="small text-muted">{{ enr.student.name }}</div>
+            </td>
+            <td>
+              <div class="fw-bold">{{ enr.course.code }}</div>
+              <div class="small text-muted">{{ enr.course.title }}</div>
+            </td>
+            <td><span class="badge bg-light text-dark border">{{ enr.course.department.code }}</span></td>
+            <td>{{ enr.semester }}</td>
+            <td><strong class="fs-6">{{ enr.score }}</strong></td>
+            <td><span class="badge badge-grade-{{ enr.grade_letter|lower }} fs-6">{{ enr.grade_letter }}</span></td>
+            <td>
+              {% if enr.is_passing %}
+              <span class="badge bg-success-subtle text-success fw-semibold"><i class="fa-solid fa-circle-check me-1"></i> Pass</span>
+              {% else %}
+              <span class="badge bg-danger-subtle text-danger fw-semibold"><i class="fa-solid fa-circle-xmark me-1"></i> Fail</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted">
+              <i class="fa-solid fa-award fa-3x mb-3 text-secondary d-block"></i>
+              No grade records found matching your filters.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} grade records</small>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&semester={{ selected_sem }}&grade={{ selected_grade }}">&laquo;</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&semester={{ selected_sem }}&grade={{ selected_grade }}">&raquo;</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

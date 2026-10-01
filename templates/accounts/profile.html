@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+      <div class="d-flex align-items-center gap-4 mb-4 pb-3 border-bottom">
+        <div class="user-avatar" style="width: 64px; height: 64px; font-size: 1.5rem; background: #2563eb;">
+          {{ user.username|make_list|first|upper }}
+        </div>
+        <div>
+          <h4 class="fw-bold mb-0 text-dark">{{ user.get_full_name|default:user.username }}</h4>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="badge badge-role badge-role-{{ profile.role|default:'admin' }}">
+              {{ profile.get_role_display|default:'Admin' }}
+            </span>
+            <span class="text-muted small">@{{ user.username }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="small text-muted fw-bold text-uppercase">Email Address</label>
+          <div class="fw-semibold">{{ user.email|default:'Not specified' }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="small text-muted fw-bold text-uppercase">Assigned Department</label>
+          <div class="fw-semibold">
+            {% if profile.department %}
+            {{ profile.department.code }} - {{ profile.department.name }}
+            {% else %}
+            University-wide (Unrestricted)
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="small text-muted fw-bold text-uppercase">Account Created</label>
+          <div class="text-muted">{{ user.date_joined|date:"Y-m-d H:i" }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="small text-muted fw-bold text-uppercase">Last Login</label>
+          <div class="text-muted">{{ user.last_login|date:"Y-m-d H:i"|default:'Never' }}</div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+        <span class="small text-muted">Need to update your password?</span>
+        <a href="{% url 'accounts:password_change' %}" class="btn btn-outline-primary btn-sm">
+          <i class="fa-solid fa-key me-1"></i> Change Password
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
