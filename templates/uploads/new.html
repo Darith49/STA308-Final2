@@ -20,6 +20,35 @@
         <form method="post" enctype="multipart/form-data" id="uploadForm">
             {% csrf_token %}
 
+            <!-- Dataset Type & Template Selection -->
+            <div class="card card-custom p-4 mb-4 shadow-sm border-0">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <label class="form-label fw-bold mb-0">Select Dataset Type</label>
+                        <p class="text-secondary small mb-0">Upload in required sequence: <strong>Courses &rarr; Students &rarr; Grades &rarr; Attendance</strong></p>
+                    </div>
+                </div>
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-7">
+                        {{ form.dataset_type }}
+                        <div class="form-text small">{{ form.dataset_type.help_text }}</div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="dropdown w-100">
+                            <button class="btn btn-outline-custom w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-file-earmark-arrow-down me-1"></i> Download Starter Template
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                <li><a class="dropdown-item" href="{% url 'uploads:template' 'courses' %}"><i class="bi bi-1-circle text-primary me-2"></i> Courses Template (.xlsx)</a></li>
+                                <li><a class="dropdown-item" href="{% url 'uploads:template' 'students' %}"><i class="bi bi-2-circle text-primary me-2"></i> Students Template (.xlsx)</a></li>
+                                <li><a class="dropdown-item" href="{% url 'uploads:template' 'grades' %}"><i class="bi bi-3-circle text-primary me-2"></i> Grades Template (.xlsx)</a></li>
+                                <li><a class="dropdown-item" href="{% url 'uploads:template' 'attendance' %}"><i class="bi bi-4-circle text-primary me-2"></i> Attendance Template (.xlsx)</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Dropzone Box -->
             <div class="card card-custom p-4 mb-4">
                 <div class="dropzone-box" id="dropzoneBox">

@@ -18,6 +18,11 @@
         </div>
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
+        {% if error_count > 0 %}
+        <a href="{% url 'uploads:error-file' upload.id %}" class="btn btn-outline-danger d-inline-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-x-fill"></i> Download Error File ({{ error_count }})
+        </a>
+        {% endif %}
         <a href="{% url 'dashboards:view' upload.id %}" class="btn btn-primary-custom d-inline-flex align-items-center gap-2">
             <i class="bi bi-bar-chart-fill"></i> Open Live Dashboard
         </a>
@@ -28,6 +33,9 @@
             <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                 <li><a class="dropdown-item" href="{% url 'uploads:download' upload.id %}?version=clean_xlsx"><i class="bi bi-file-earmark-excel text-success me-2"></i> Cleaned Excel (.xlsx)</a></li>
                 <li><a class="dropdown-item" href="{% url 'uploads:download' upload.id %}?version=clean_csv"><i class="bi bi-filetype-csv text-primary me-2"></i> Cleaned CSV (.csv)</a></li>
+                {% if error_count > 0 %}
+                <li><a class="dropdown-item text-danger" href="{% url 'uploads:error-file' upload.id %}"><i class="bi bi-file-earmark-x me-2"></i> Rejected Rows (.xlsx)</a></li>
+                {% endif %}
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-muted" href="{% url 'uploads:download' upload.id %}?version=raw"><i class="bi bi-cloud-arrow-down me-2"></i> Original Raw Spreadsheet</a></li>
             </ul>
@@ -168,6 +176,13 @@
                     <i class="bi bi-graph-up me-1"></i> Statistical Insights & Correlation
                 </button>
             </li>
+            {% if error_count > 0 %}
+            <li class="nav-item">
+                <button class="nav-link fw-bold py-3 px-3 text-danger" id="errors-tab" data-bs-toggle="tab" data-bs-target="#errors" type="button" role="tab">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i> Rejected Rows ({{ error_count }})
+                </button>
+            </li>
+            {% endif %}
             <li class="nav-item">
                 <button class="nav-link fw-bold py-3 px-3 text-secondary" id="rerun-tab" data-bs-toggle="tab" data-bs-target="#rerun" type="button" role="tab">
                     <i class="bi bi-arrow-repeat me-1"></i> Re-run Options
@@ -370,6 +385,43 @@
                 <p class="text-muted small">Not enough numeric columns found to construct correlation matrix.</p>
             {% endif %}
         </div>
+
+        {% if error_count > 0 %}
+        <!-- Tab: Rejected Rows -->
+        <div class="tab-pane fade p-4" id="errors" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-x-circle-fill me-1"></i> Rejected Rows ({{ error_count }})</h6>
+                    <span class="text-muted small">These rows were excluded from insertion into the relational database due to validation or schema errors.</span>
+                </div>
+                <a href="{% url 'uploads:error-file' upload.id %}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-download me-1"></i> Download Error File (.xlsx)
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle small mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 100px;">Row #</th>
+                            <th>Column Field</th>
+                            <th>Original / Rejected Value</th>
+                            <th>Validation Failure Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for err in errors %}
+                        <tr>
+                            <td class="fw-bold text-danger">{{ err.row_number }}</td>
+                            <td><code>{{ err.column_name }}</code></td>
+                            <td><span class="badge bg-light text-dark border">{{ err.raw_value|truncatechars:40 }}</span></td>
+                            <td class="text-danger fw-medium">{{ err.reason }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
 
         <!-- Tab 4: Re-run Options -->
         <div class="tab-pane fade p-4" id="rerun" role="tabpanel">

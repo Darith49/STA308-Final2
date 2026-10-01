@@ -45,21 +45,94 @@
             <div class="collapse navbar-collapse" id="navContent">
                 {% if user.is_authenticated %}
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-1">
+                    {% if user.profile.is_admin %}
+                    <!-- Admin Navigation -->
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}" href="{% url 'uploads:list' %}">
-                            <i class="bi bi-folder2-open me-1"></i> Datasets
+                        <a class="nav-link {% if request.resolver_match.url_name == 'admin-dashboard' %}active{% endif %}" href="{% url 'academic:admin-dashboard' %}">
+                            <i class="bi bi-speedometer2 me-1"></i> System Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'latest-dashboard' or request.resolver_match.url_name == 'view' %}active{% endif %}" href="{% url 'dashboards:latest-dashboard' %}">
-                            <i class="bi bi-bar-chart-fill me-1"></i> Dashboard
+                        <a class="nav-link {% if request.resolver_match.url_name == 'admin-users' %}active{% endif %}" href="{% url 'academic:admin-users' %}">
+                            <i class="bi bi-people-fill me-1"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'admin-departments' %}active{% endif %}" href="{% url 'academic:admin-departments' %}">
+                            <i class="bi bi-diagram-3 me-1"></i> Curriculum
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}" href="{% url 'uploads:list' %}">
+                            <i class="bi bi-folder2-open me-1"></i> Uploads
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'admin-audit-log' %}active{% endif %}" href="{% url 'academic:admin-audit-log' %}">
+                            <i class="bi bi-shield-check me-1"></i> Audit Trail
+                        </a>
+                    </li>
+
+                    {% elif user.profile.is_registrar %}
+                    <!-- Registrar Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}" href="{% url 'uploads:list' %}">
+                            <i class="bi bi-folder2-open me-1"></i> Upload Portal
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'create' %}active{% endif %}" href="{% url 'uploads:create' %}">
-                            <i class="bi bi-cloud-arrow-up me-1"></i> Upload File
+                            <i class="bi bi-cloud-arrow-up me-1"></i> Upload Dataset
                         </a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-file-earmark-arrow-down me-1"></i> Get Templates
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0">
+                            <li><h6 class="dropdown-header">Upload Order Sequence:</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'uploads:template' 'courses' %}"><i class="bi bi-1-circle text-primary me-2"></i> 1. Courses Template</a></li>
+                            <li><a class="dropdown-item" href="{% url 'uploads:template' 'students' %}"><i class="bi bi-2-circle text-primary me-2"></i> 2. Students Template</a></li>
+                            <li><a class="dropdown-item" href="{% url 'uploads:template' 'grades' %}"><i class="bi bi-3-circle text-primary me-2"></i> 3. Grades Template</a></li>
+                            <li><a class="dropdown-item" href="{% url 'uploads:template' 'attendance' %}"><i class="bi bi-4-circle text-primary me-2"></i> 4. Attendance Template</a></li>
+                        </ul>
+                    </li>
+
+                    {% elif user.profile.is_dept_head %}
+                    <!-- Department Head Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dept-dashboard' %}active{% endif %}" href="{% url 'academic:dept-dashboard' %}">
+                            <i class="bi bi-bar-chart-fill me-1"></i> Dept Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dept-browse' %}active{% endif %}" href="{% url 'academic:dept-browse' %}">
+                            <i class="bi bi-table me-1"></i> Browse & Export Records
+                        </a>
+                    </li>
+
+                    {% elif user.profile.is_student %}
+                    <!-- Student Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'student-portal' %}active{% endif %}" href="{% url 'academic:student-portal' %}">
+                            <i class="bi bi-person-workspace me-1"></i> Student Portal
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'student-profile-edit' %}active{% endif %}" href="{% url 'academic:student-profile-edit' %}">
+                            <i class="bi bi-gear me-1"></i> Settings
+                        </a>
+                    </li>
+
+                    {% else %}
+                    <!-- General / Legacy Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'uploads:list' %}"><i class="bi bi-folder2-open me-1"></i> Datasets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'uploads:create' %}"><i class="bi bi-cloud-arrow-up me-1"></i> Upload</a>
+                    </li>
+                    {% endif %}
                 </ul>
 
                 <div class="d-flex align-items-center gap-3">
@@ -70,12 +143,13 @@
                             </div>
                             <span>{{ user.username }}</span>
                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 0.72rem;">
-                                {{ user.profile.get_role_display|default:"Analyst" }}
+                                {{ user.profile.get_role_display|default:"User" }}
                             </span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                             <li><h6 class="dropdown-header">{{ user.profile.department }}</h6></li>
                             <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="bi bi-person me-2"></i> Profile Settings</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:change-password' %}"><i class="bi bi-key me-2"></i> Change Password</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{% url 'accounts:logout' %}" method="post" class="px-2">

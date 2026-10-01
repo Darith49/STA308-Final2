@@ -1,62 +1,72 @@
 {% extends "base.html" %}
 
-{% block title %}My Datasets{% endblock %}
+{% block title %}University Datasets{% endblock %}
 
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                {% if is_admin %}All University Uploads{% else %}My Datasets & Uploads{% endif %}
+            </span>
+            <span class="text-secondary small">&bull; Automated Cleaning & Relational Ingestion</span>
+        </div>
         <h2 class="h3 fw-bold mb-1">University Datasets</h2>
-        <p class="text-muted small mb-0">Upload spreadsheets to automatically clean, profile quality, and visualize live analytics.</p>
     </div>
-    <a href="{% url 'uploads:create' %}" class="btn btn-primary-custom d-inline-flex align-items-center gap-2">
-        <i class="bi bi-cloud-arrow-up-fill"></i> Upload New Spreadsheet
-    </a>
+    <div class="d-flex flex-wrap gap-2">
+        <div class="dropdown">
+            <button class="btn btn-outline-custom dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-file-earmark-arrow-down me-1"></i> Get Starter Templates
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                <li><h6 class="dropdown-header">Upload Order Sequence:</h6></li>
+                <li><a class="dropdown-item" href="{% url 'uploads:template' 'courses' %}"><i class="bi bi-1-circle text-primary me-2"></i> 1. Courses Template (.xlsx)</a></li>
+                <li><a class="dropdown-item" href="{% url 'uploads:template' 'students' %}"><i class="bi bi-2-circle text-primary me-2"></i> 2. Students Template (.xlsx)</a></li>
+                <li><a class="dropdown-item" href="{% url 'uploads:template' 'grades' %}"><i class="bi bi-3-circle text-primary me-2"></i> 3. Grades Template (.xlsx)</a></li>
+                <li><a class="dropdown-item" href="{% url 'uploads:template' 'attendance' %}"><i class="bi bi-4-circle text-primary me-2"></i> 4. Attendance Template (.xlsx)</a></li>
+            </ul>
+        </div>
+        <a href="{% url 'uploads:create' %}" class="btn btn-primary-custom d-inline-flex align-items-center gap-2">
+            <i class="bi bi-cloud-arrow-up-fill"></i> Upload New Dataset
+        </a>
+    </div>
 </div>
 
-<!-- KPI Cards -->
-{% if uploads %}
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-lg-4">
-        <div class="kpi-card">
-            <div class="kpi-icon-box kpi-icon-indigo">
-                <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+<!-- Registrar Upload Order Guidance Banner -->
+<div class="card card-custom border-0 p-3 mb-4 bg-light shadow-sm">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="brand-icon" style="width: 40px; height: 40px; font-size: 1.1rem; background: #0f766e; color: white;">
+                <i class="bi bi-signpost-split-fill"></i>
             </div>
-            <div class="kpi-title">Total Uploads</div>
-            <div class="kpi-value">{{ uploads.count }}</div>
-            <div class="kpi-subtext">Processed workbooks in your workspace</div>
+            <div>
+                <strong class="text-dark">Registrar Data Lifecycle:</strong>
+                <span class="text-secondary small ms-1">
+                    Upload in sequence: <strong>Courses &rarr; Students &rarr; Grades &rarr; Attendance</strong>. Valid rows are bulk-inserted; rejected rows are captured for error download.
+                </span>
+            </div>
         </div>
-    </div>
-    <div class="col-sm-6 col-lg-4">
-        <div class="kpi-card">
-            <div class="kpi-icon-box kpi-icon-emerald">
-                <i class="bi bi-check2-circle"></i>
-            </div>
-            <div class="kpi-title">Clean Records Available</div>
-            <div class="kpi-value">
-                {% with total_rows=0 %}
-                    {{ uploads.first.row_count_clean|default:"0" }}
-                {% endwith %}
-            </div>
-            <div class="kpi-subtext">Verified standardized records</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-4">
-        <div class="kpi-card">
-            <div class="kpi-icon-box kpi-icon-amber">
-                <i class="bi bi-shield-check"></i>
-            </div>
-            <div class="kpi-title">Reproducibility Standard</div>
-            <div class="kpi-value">100%</div>
-            <div class="kpi-subtext">Every modification tracked in audit log</div>
+        <div>
+            <!-- Filter by dataset type -->
+            <form method="get" class="d-flex align-items-center gap-2">
+                <select name="dataset_type" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="all">-- All Dataset Types --</option>
+                    {% for code, label in dataset_types %}
+                    <option value="{{ code }}" {% if dataset_filter == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                {% if dataset_filter and dataset_filter != 'all' %}
+                <a href="{% url 'uploads:list' %}" class="btn btn-sm btn-outline-secondary" title="Reset Filter"><i class="bi bi-x-lg"></i></a>
+                {% endif %}
+            </form>
         </div>
     </div>
 </div>
-{% endif %}
 
 <!-- Uploads Table Card -->
-<div class="card card-custom overflow-hidden">
-    <div class="card-header-clean">
-        <h5 class="fw-bold mb-0">Processed Files</h5>
+<div class="card card-custom overflow-hidden shadow-sm">
+    <div class="card-header-clean d-flex justify-content-between align-items-center px-4 py-3 bg-white border-bottom">
+        <h5 class="fw-bold mb-0">Uploaded Datasets</h5>
         <span class="badge bg-light text-muted border">{{ uploads|length }} items</span>
     </div>
 
@@ -66,10 +76,12 @@
             <thead>
                 <tr>
                     <th>Spreadsheet File</th>
+                    <th>Dataset Type</th>
                     <th>Status</th>
                     <th>Quality Score</th>
-                    <th>Rows (Raw &rarr; Clean)</th>
-                    <th>Uploaded At</th>
+                    <th>Imported Rows</th>
+                    <th>Validation Errors</th>
+                    <th>Uploaded</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -85,13 +97,20 @@
                                 <a href="{% if upload.status == 'DONE' %}{% url 'uploads:report' upload.id %}{% elif upload.status == 'PROCESSING' or upload.status == 'QUEUED' %}{% url 'uploads:processing' upload.id %}{% else %}#{% endif %}" class="fw-bold text-dark text-decoration-none">
                                     {{ upload.original_filename }}
                                 </a>
-                                <div class="text-muted small">{{ upload.size_bytes|filesizeformat }}</div>
+                                <div class="text-muted small">
+                                    {{ upload.size_bytes|filesizeformat }} &bull; {{ upload.owner.username }}
+                                </div>
                             </div>
                         </div>
                     </td>
                     <td>
+                        <span class="badge bg-secondary-subtle text-secondary border">
+                            {{ upload.get_dataset_type_display }}
+                        </span>
+                    </td>
+                    <td>
                         {% if upload.status == 'DONE' %}
-                            <span class="badge-status badge-status-done"><i class="bi bi-check-circle-fill"></i> Cleaned</span>
+                            <span class="badge-status badge-status-done"><i class="bi bi-check-circle-fill"></i> Ready</span>
                         {% elif upload.status == 'PROCESSING' %}
                             <a href="{% url 'uploads:processing' upload.id %}" class="text-decoration-none">
                                 <span class="badge-status badge-status-processing pulse-icon"><i class="bi bi-arrow-repeat spin"></i> {{ upload.progress_pct }}% Processing</span>
@@ -113,20 +132,31 @@
                     </td>
                     <td>
                         {% if upload.status == 'DONE' %}
-                            <span class="text-muted">{{ upload.row_count_raw }}</span> &rarr; <span class="fw-bold text-primary">{{ upload.row_count_clean }}</span>
+                            <span class="fw-bold text-primary">{{ upload.inserted_rows_count|default:upload.row_count_clean }}</span>
+                            <span class="text-muted small">/ {{ upload.row_count_raw }}</span>
                         {% else %}
                             <span class="text-muted small">Pending</span>
                         {% endif %}
                     </td>
                     <td>
-                        <span class="text-muted small">{{ upload.created_at|date:"M d, Y H:i" }}</span>
+                        {% if upload.errors.count > 0 %}
+                            <a href="{% url 'uploads:error-file' upload.id %}" class="badge bg-danger-subtle text-danger border border-danger-subtle text-decoration-none" title="Download rejected rows Excel file">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ upload.errors.count }} rejected
+                            </a>
+                        {% elif upload.status == 'DONE' %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                <i class="bi bi-check2"></i> 0 errors
+                            </span>
+                        {% else %}
+                            <span class="text-muted small">&mdash;</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="text-muted small">{{ upload.created_at|date:"M d, H:i" }}</span>
                     </td>
                     <td class="text-end">
                         <div class="btn-group btn-group-sm">
                             {% if upload.status == 'DONE' %}
-                                <a href="{% url 'dashboards:view' upload.id %}" class="btn btn-outline-primary" title="View Live Dashboard">
-                                    <i class="bi bi-bar-chart-fill me-1"></i> Dashboard
-                                </a>
                                 <a href="{% url 'uploads:report' upload.id %}" class="btn btn-outline-secondary" title="View Quality Report">
                                     <i class="bi bi-journal-check me-1"></i> Report
                                 </a>
@@ -137,6 +167,9 @@
                                     <li><h6 class="dropdown-header">Export Data</h6></li>
                                     <li><a class="dropdown-item" href="{% url 'uploads:download' upload.id %}?version=clean_xlsx"><i class="bi bi-file-earmark-excel text-success me-2"></i> Cleaned Excel (.xlsx)</a></li>
                                     <li><a class="dropdown-item" href="{% url 'uploads:download' upload.id %}?version=clean_csv"><i class="bi bi-filetype-csv text-primary me-2"></i> Cleaned CSV</a></li>
+                                    {% if upload.errors.count > 0 %}
+                                    <li><a class="dropdown-item text-danger" href="{% url 'uploads:error-file' upload.id %}"><i class="bi bi-file-earmark-x me-2"></i> Rejected Rows (.xlsx)</a></li>
+                                    {% endif %}
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-muted" href="{% url 'uploads:download' upload.id %}?version=raw"><i class="bi bi-cloud-download me-2"></i> Original Raw File</a></li>
                                 </ul>
@@ -146,9 +179,9 @@
                                 </a>
                             {% endif %}
                             
-                            <form action="{% url 'uploads:delete' upload.id %}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this dataset?');">
+                            <form action="{% url 'uploads:delete' upload.id %}" method="post" class="d-inline" onsubmit="return confirm('Delete this upload? All imported database rows from this upload will be rolled back!');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger ms-1" title="Delete Upload">
+                                <button type="submit" class="btn btn-outline-danger ms-1" title="Delete Upload and Rollback Rows">
                                     <i class="bi bi-trash3"></i>
                                 </button>
                             </form>
@@ -166,10 +199,10 @@
         </div>
         <h4 class="fw-bold mb-2">No Datasets Uploaded Yet</h4>
         <p class="text-muted small mb-4" style="max-width: 480px; margin: 0 auto;">
-            Upload your university spreadsheet (grades, courses, student demographics) to automatically execute the 14-stage data cleaning pipeline.
+            Get started by downloading starter templates and uploading Courses, Students, Grades, and Attendance files.
         </p>
         <a href="{% url 'uploads:create' %}" class="btn btn-primary-custom">
-            <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload Your First Spreadsheet
+            <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload Your First Dataset
         </a>
     </div>
     {% endif %}
