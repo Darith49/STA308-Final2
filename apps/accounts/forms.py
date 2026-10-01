@@ -33,6 +33,14 @@ class UserLoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Username"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Password"}))
 
+    def clean_username(self):
+        username = self.cleaned_data.get("username", "")
+        # Resolve username case-insensitively (e.g. 'darith' -> 'Darith')
+        user = User.objects.filter(username__iexact=username).first()
+        if user:
+            return user.username
+        return username
+
 
 class UserProfileForm(forms.ModelForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control"}))
