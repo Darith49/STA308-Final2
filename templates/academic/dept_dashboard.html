@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Department Dashboard - {{ department.code }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                <i class="bi bi-mortarboard me-1"></i> Department Head & Faculty View
+            </span>
+            <span class="text-secondary small">&bull; {{ department.code }}</span>
+        </div>
+        <h2 class="fw-bold mb-0">{{ department.name }}</h2>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        {% if all_departments %}
+        <div class="dropdown">
+            <button class="btn btn-outline-custom dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-building me-1"></i> Switch Dept: {{ department.code }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                {% for d in all_departments %}
+                <li><a class="dropdown-item {% if d == department %}active{% endif %}" href="?dept_code={{ d.code }}">{{ d.code }} - {{ d.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        <a href="{% url 'academic:dept-browse' %}{% if all_departments %}?dept_code={{ department.code }}{% endif %}" class="btn btn-primary-custom">
+            <i class="bi bi-table me-1"></i> Browse & Export Records
+        </a>
+    </div>
+</div>
+
+<!-- Dynamic Filter Bar (Re-fetches charts via API) -->
+<div class="card card-custom border-0 p-3 mb-4 shadow-sm">
+    <div class="row g-2 align-items-center">
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold text-secondary mb-1">Filter by Semester</label>
+            <select id="filterSemester" class="form-select form-select-sm">
+                <option value="all">All Semesters</option>
+                {% for sem in semesters %}
+                <option value="{{ sem }}">{{ sem }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary mb-1">Filter by Academic Program</label>
+            <select id="filterProgram" class="form-select form-select-sm">
+                <option value="all">All Department Programs</option>
+                {% for p in programs %}
+                <option value="{{ p.id }}">{{ p.code }} ({{ p.name }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary mb-1">Filter by Course</label>
+            <select id="filterCourse" class="form-select form-select-sm">
+                <option value="all">All Department Courses</option>
+                {% for c in courses_list %}
+                <option value="{{ c.code }}">{{ c.code }}: {{ c.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button id="resetFiltersBtn" class="btn btn-sm btn-outline-secondary w-100" style="margin-top: 22px;" title="Reset Filters">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- KPIs Row -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Department Students</div>
+            <div class="fs-2 fw-bold text-dark mt-1" id="kpiStudents">{{ total_students }}</div>
+            <div class="text-muted small mt-1"><i class="bi bi-person-fill text-primary me-1"></i> Enrolled majors</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Active Courses</div>
+            <div class="fs-2 fw-bold text-dark mt-1">{{ total_courses }}</div>
+            <div class="text-muted small mt-1"><i class="bi bi-journal-check text-info me-1"></i> Department offerings</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Average Grade</div>
+            <div class="fs-2 fw-bold text-dark mt-1" id="kpiAvgScore">{{ avg_score }}</div>
+            <div class="text-muted small mt-1"><i class="bi bi-graph-up text-warning me-1"></i> Out of 100</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Pass Rate</div>
+            <div class="fs-2 fw-bold text-dark mt-1" id="kpiPassRate">{{ pass_rate }}%</div>
+            <div class="text-muted small mt-1"><i class="bi bi-check-circle-fill text-success me-1"></i> Passing marks</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Attendance Rate</div>
+            <div class="fs-2 fw-bold text-dark mt-1">{{ attendance_rate }}%</div>
+            <div class="text-muted small mt-1"><i class="bi bi-calendar2-check-fill text-primary me-1"></i> Classroom sessions</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="row g-4 mb-4">
+    <!-- Chart 1: Score Distribution -->
+    <div class="col-lg-6">
+        <div class="card card-custom border-0 p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Score Distribution</h5>
+                    <p class="text-secondary small mb-0">Grade ranges across evaluated courses</p>
+                </div>
+                <span class="badge bg-light text-secondary border">Live Filtered</span>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="scoreDistChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 2: Attendance Breakdown -->
+    <div class="col-lg-6">
+        <div class="card card-custom border-0 p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Attendance Status Ratio</h5>
+                    <p class="text-secondary small mb-0">Presence, tardiness, and absences</p>
+                </div>
+                <span class="badge bg-light text-secondary border">Live Filtered</span>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="attendanceDoughnutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 3: Pass Rate by Course -->
+    <div class="col-12">
+        <div class="card card-custom border-0 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Course Pass Rates</h5>
+                    <p class="text-secondary small mb-0">Percentage of passing students (&ge; 60%) per curriculum course</p>
+                </div>
+                <span class="badge bg-light text-secondary border">Live Filtered</span>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="passRateByCourseChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Course Performance Summary Table -->
+<div class="card card-custom border-0 shadow-sm overflow-hidden mb-4">
+    <div class="card-header bg-transparent border-0 px-4 pt-4 pb-2">
+        <h5 class="fw-bold mb-0">Course Benchmark Summary</h5>
+        <p class="text-secondary small mb-0">Student enrollment and completion metrics by course</p>
+    </div>
+    <div class="table-responsive px-4 pb-3">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Title</th>
+                    <th class="text-center">Total Enrolled</th>
+                    <th class="text-center">Pass Rate</th>
+                    <th class="text-end">Records</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in course_stats %}
+                <tr>
+                    <td><span class="badge bg-primary-subtle text-primary fw-bold">{{ c.code }}</span></td>
+                    <td class="fw-semibold">{{ c.title }}</td>
+                    <td class="text-center">{{ c.total }}</td>
+                    <td class="text-center">
+                        <span class="fw-semibold {% if c.pass_rate >= 80 %}text-success{% elif c.pass_rate >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                            {{ c.pass_rate }}%
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'academic:dept-browse' %}?tab=grades&q={{ c.code }}{% if all_departments %}&dept_code={{ department.code }}{% endif %}" class="btn btn-sm btn-outline-custom">
+                            View Grades
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-3 text-muted">No courses registered for this department.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let scoreDistChart = null;
+    let attendanceChart = null;
+    let passRateChart = null;
+
+    const deptCode = "{{ department.code }}";
+    const filterSemester = document.getElementById("filterSemester");
+    const filterProgram = document.getElementById("filterProgram");
+    const filterCourse = document.getElementById("filterCourse");
+    const resetBtn = document.getElementById("resetFiltersBtn");
+
+    function fetchChartData() {
+        const sem = filterSemester.value;
+        const prog = filterProgram.value;
+        const crs = filterCourse.value;
+
+        const url = `{% url 'academic:api-dept-chart-data' %}?dept_code=${encodeURIComponent(deptCode)}&semester=${encodeURIComponent(sem)}&program=${encodeURIComponent(prog)}&course=${encodeURIComponent(crs)}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) return;
+
+                // Update KPIs
+                if (data.kpis) {
+                    const elStudents = document.getElementById("kpiStudents");
+                    const elAvg = document.getElementById("kpiAvgScore");
+                    const elPass = document.getElementById("kpiPassRate");
+                    if (elStudents && data.kpis.total_students !== undefined) elStudents.textContent = data.kpis.total_students;
+                    if (elAvg && data.kpis.avg_score !== undefined) elAvg.textContent = data.kpis.avg_score;
+                    if (elPass && data.kpis.pass_rate !== undefined) elPass.textContent = data.kpis.pass_rate + "%";
+                }
+
+                // 1. Update Score Dist
+                if (scoreDistChart) {
+                    scoreDistChart.data.labels = data.score_distribution.labels;
+                    scoreDistChart.data.datasets[0].data = data.score_distribution.values;
+                    scoreDistChart.update();
+                } else {
+                    const ctx = document.getElementById("scoreDistChart");
+                    if (ctx) {
+                        scoreDistChart = new Chart(ctx, {
+                            type: "bar",
+                            data: {
+                                labels: data.score_distribution.labels,
+                                datasets: [{
+                                    label: "Students",
+                                    data: data.score_distribution.values,
+                                    backgroundColor: ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#10b981"],
+                                    borderRadius: 4,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    y: { beginAtZero: true, grid: { color: "#f1f5f9" } },
+                                    x: { grid: { display: false } }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // 2. Update Attendance Doughnut
+                if (attendanceChart) {
+                    attendanceChart.data.labels = data.attendance.labels;
+                    attendanceChart.data.datasets[0].data = data.attendance.values;
+                    attendanceChart.update();
+                } else {
+                    const ctx = document.getElementById("attendanceDoughnutChart");
+                    if (ctx) {
+                        attendanceChart = new Chart(ctx, {
+                            type: "doughnut",
+                            data: {
+                                labels: data.attendance.labels,
+                                datasets: [{
+                                    data: data.attendance.values,
+                                    backgroundColor: ["#10b981", "#ef4444", "#f59e0b", "#64748b"],
+                                    borderWidth: 2,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: "right" } }
+                            }
+                        });
+                    }
+                }
+
+                // 3. Update Pass Rates
+                if (passRateChart) {
+                    passRateChart.data.labels = data.pass_rates.labels;
+                    passRateChart.data.datasets[0].data = data.pass_rates.values;
+                    passRateChart.update();
+                } else {
+                    const ctx = document.getElementById("passRateByCourseChart");
+                    if (ctx) {
+                        passRateChart = new Chart(ctx, {
+                            type: "bar",
+                            data: {
+                                labels: data.pass_rates.labels,
+                                datasets: [{
+                                    label: "Pass Rate (%)",
+                                    data: data.pass_rates.values,
+                                    backgroundColor: "#0ea5e9",
+                                    borderRadius: 4,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    y: { min: 0, max: 100, grid: { color: "#f1f5f9" } },
+                                    x: { grid: { display: false } }
+                                }
+                            }
+                        });
+                    }
+                }
+            })
+            .catch(err => console.error("Error fetching chart data:", err));
+    }
+
+    // Initial load
+    fetchChartData();
+
+    // Event listeners
+    filterSemester.addEventListener("change", fetchChartData);
+    filterProgram.addEventListener("change", fetchChartData);
+    filterCourse.addEventListener("change", fetchChartData);
+
+    resetBtn.addEventListener("click", function() {
+        filterSemester.value = "all";
+        filterProgram.value = "all";
+        filterCourse.value = "all";
+        fetchChartData();
+    });
+});
+</script>
+{% endblock %}

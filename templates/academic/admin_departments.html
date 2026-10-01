@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Curriculum & Departments (Admin){% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <a href="{% url 'academic:admin-dashboard' %}" class="text-decoration-none small text-secondary">
+                <i class="bi bi-arrow-left"></i> System Dashboard
+            </a>
+            <span class="text-secondary small">&bull; Curriculum Structure</span>
+        </div>
+        <h2 class="fw-bold mb-0">Departments, Programs & Courses</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-custom" data-bs-toggle="modal" data-bs-target="#createDeptModal">
+            <i class="bi bi-building-add me-1"></i> New Department
+        </button>
+        <button class="btn btn-outline-custom" data-bs-toggle="modal" data-bs-target="#createProgModal">
+            <i class="bi bi-mortarboard-fill me-1"></i> New Program
+        </button>
+        <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+            <i class="bi bi-journal-plus me-1"></i> New Course
+        </button>
+    </div>
+</div>
+
+<!-- Tabs Navigation -->
+<ul class="nav nav-pills mb-4 gap-2" id="curriculumTabs" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active rounded-pill px-4" id="depts-tab" data-bs-toggle="pill" data-bs-target="#depts-content" type="button">
+            <i class="bi bi-building me-1"></i> Departments ({{ departments.count }})
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link rounded-pill px-4" id="progs-tab" data-bs-toggle="pill" data-bs-target="#progs-content" type="button">
+            <i class="bi bi-diagram-3 me-1"></i> Programs ({{ programs.count }})
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link rounded-pill px-4" id="courses-tab" data-bs-toggle="pill" data-bs-target="#courses-content" type="button">
+            <i class="bi bi-journal-bookmark me-1"></i> Courses ({{ courses.count }})
+        </button>
+    </li>
+</ul>
+
+<!-- Tabs Content -->
+<div class="tab-content" id="curriculumTabsContent">
+    <!-- Tab 1: Departments -->
+    <div class="tab-pane fade show active" id="depts-content" role="tabpanel">
+        <div class="card card-custom border-0 overflow-hidden shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Department Name</th>
+                            <th>Head / Coordinator</th>
+                            <th>Description</th>
+                            <th class="text-center">Programs</th>
+                            <th class="text-center">Courses</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in departments %}
+                        <tr>
+                            <td><span class="badge bg-primary-subtle text-primary fw-bold">{{ d.code }}</span></td>
+                            <td class="fw-semibold">{{ d.name }}</td>
+                            <td>{{ d.head.get_full_name|default:d.head.username|default:"Unassigned" }}</td>
+                            <td class="small text-muted text-truncate" style="max-width: 250px;">{{ d.description|default:"-" }}</td>
+                            <td class="text-center">{{ d.programs.count }}</td>
+                            <td class="text-center">{{ d.courses.count }}</td>
+                            <td class="text-end">
+                                <form action="{% url 'academic:admin-dept-delete' d.id %}" method="post" class="d-inline" onsubmit="return confirm('Delete department {{ d.code }}? All linked programs and courses will be deleted!');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete Department">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">No departments configured yet. Click "New Department" above.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Programs -->
+    <div class="tab-pane fade" id="progs-content" role="tabpanel">
+        <div class="card card-custom border-0 overflow-hidden shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Program Code</th>
+                            <th>Degree Title</th>
+                            <th>Department</th>
+                            <th>Degree Level</th>
+                            <th class="text-center">Courses</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in programs %}
+                        <tr>
+                            <td><span class="badge bg-secondary-subtle text-secondary fw-bold">{{ p.code }}</span></td>
+                            <td class="fw-semibold">{{ p.name }}</td>
+                            <td>{{ p.department.code }} - {{ p.department.name }}</td>
+                            <td><span class="badge bg-info-subtle text-info-emphasis">{{ p.degree_level }}</span></td>
+                            <td class="text-center">{{ p.courses.count }}</td>
+                            <td class="text-end">
+                                <form action="{% url 'academic:admin-program-delete' p.id %}" method="post" class="d-inline" onsubmit="return confirm('Delete program {{ p.code }}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete Program">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No academic programs configured yet. Click "New Program" above.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 3: Courses -->
+    <div class="tab-pane fade" id="courses-content" role="tabpanel">
+        <div class="card card-custom border-0 overflow-hidden shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Course Code</th>
+                            <th>Title</th>
+                            <th>Department</th>
+                            <th>Program</th>
+                            <th class="text-center">Credits</th>
+                            <th>Semester</th>
+                            <th class="text-center">Imported From</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in courses %}
+                        <tr>
+                            <td><span class="badge bg-success-subtle text-success fw-bold">{{ c.code }}</span></td>
+                            <td class="fw-semibold">{{ c.title }}</td>
+                            <td>{{ c.department.code }}</td>
+                            <td>{{ c.program.code|default:"-" }}</td>
+                            <td class="text-center">{{ c.credits }}</td>
+                            <td>{{ c.semester }}</td>
+                            <td class="text-center small text-muted">
+                                {% if c.upload %}
+                                <span class="badge bg-light text-secondary border">Imported</span>
+                                {% else %}
+                                <span class="badge bg-light text-secondary border">Manual</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <form action="{% url 'academic:admin-course-delete' c.id %}" method="post" class="d-inline" onsubmit="return confirm('Delete course {{ c.code }}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete Course">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">No courses configured yet. Click "New Course" or upload via Registrar portal.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Create Department -->
+<div class="modal fade" id="createDeptModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{% url 'academic:admin-dept-create' %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-building me-2 text-primary"></i> Create Department</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Department Code *</label>
+                        {{ dept_form.code }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Department Name *</label>
+                        {{ dept_form.name }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Department Head / Coordinator</label>
+                        {{ dept_form.head }}
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Description</label>
+                        {{ dept_form.description }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-custom btn-sm">Save Department</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Create Program -->
+<div class="modal fade" id="createProgModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{% url 'academic:admin-program-create' %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-mortarboard-fill me-2 text-primary"></i> Create Degree Program</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Host Department *</label>
+                        {{ prog_form.department }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Program Code *</label>
+                        {{ prog_form.code }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Program Name *</label>
+                        {{ prog_form.name }}
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Degree Level</label>
+                        {{ prog_form.degree_level }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-custom btn-sm">Save Program</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Create Course -->
+<div class="modal fade" id="createCourseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{% url 'academic:admin-course-create' %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-journal-plus me-2 text-primary"></i> Add Course</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Department *</label>
+                            {{ course_form.department }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Program</label>
+                            {{ course_form.program }}
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Course Code *</label>
+                            {{ course_form.code }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Credit Units</label>
+                            {{ course_form.credits }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Course Title *</label>
+                        {{ course_form.title }}
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Semester / Term</label>
+                        {{ course_form.semester }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-custom btn-sm">Save Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

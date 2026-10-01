@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-md-7 col-lg-6">
+        <div class="card card-custom border-0 shadow-sm p-4">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="brand-icon" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                    <i class="bi bi-person-gear"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold mb-0">Student Profile & Settings</h4>
+                    <p class="text-secondary small mb-0">Update your contact details and security credentials</p>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">First Name *</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Last Name *</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Email Address *</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Phone Number</label>
+                    {{ form.phone }}
+                </div>
+
+                <hr class="my-4">
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">New Password (Optional)</label>
+                    {{ form.new_password }}
+                    <div class="form-text small text-muted">Leave blank if you do not want to change your password. Minimum 6 characters.</div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'academic:student-portal' %}" class="btn btn-outline-custom">Cancel</a>
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="bi bi-check2-circle me-1"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

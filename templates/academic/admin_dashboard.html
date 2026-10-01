@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block title %}System-Wide Dashboard (Admin){% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Administrator Area</span>
+            <span class="text-secondary small">&bull; Full System Control</span>
+        </div>
+        <h2 class="fw-bold mb-0">University System-Wide Overview</h2>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'academic:admin-users' %}" class="btn btn-outline-custom">
+            <i class="bi bi-people-fill me-1"></i> Manage Users
+        </a>
+        <a href="{% url 'academic:admin-departments' %}" class="btn btn-outline-custom">
+            <i class="bi bi-diagram-3-fill me-1"></i> Departments & Courses
+        </a>
+        <a href="{% url 'academic:admin-audit-log' %}" class="btn btn-outline-custom">
+            <i class="bi bi-shield-check me-1"></i> Audit Trail
+        </a>
+        <a href="{% url 'uploads:list' %}" class="btn btn-primary-custom">
+            <i class="bi bi-cloud-arrow-up-fill me-1"></i> All Uploads
+        </a>
+    </div>
+</div>
+
+<!-- Primary System KPIs -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Total Students</div>
+            <div class="fs-3 fw-bold text-dark mt-1">{{ total_students }}</div>
+            <div class="text-muted small mt-2"><i class="bi bi-person-badge text-primary me-1"></i> Across all depts</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Active Courses</div>
+            <div class="fs-3 fw-bold text-dark mt-1">{{ total_courses }}</div>
+            <div class="text-muted small mt-2"><i class="bi bi-journal-bookmark text-success me-1"></i> Curriculum units</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Departments</div>
+            <div class="fs-3 fw-bold text-dark mt-1">{{ total_departments }}</div>
+            <div class="text-muted small mt-2"><i class="bi bi-building text-info me-1"></i> Academic faculties</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Total Enrollments</div>
+            <div class="fs-3 fw-bold text-dark mt-1">{{ total_grades }}</div>
+            <div class="text-muted small mt-2"><i class="bi bi-card-checklist text-warning me-1"></i> Graded records</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Overall Pass Rate</div>
+            <div class="fs-3 fw-bold text-dark mt-1">{{ overall_pass_rate }}%</div>
+            <div class="text-muted small mt-2"><i class="bi bi-check-circle-fill text-success me-1"></i> Passing &ge; 60%</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-custom border-0 p-3 h-100">
+            <div class="text-secondary small fw-medium">Attendance Rate</div>
+            <div class="fs-3 fw-bold text-dark mt-1">{{ attendance_rate }}%</div>
+            <div class="text-muted small mt-2"><i class="bi bi-calendar-check-fill text-primary me-1"></i> Campus sessions</div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Comparison Charts -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-7">
+        <div class="card card-custom border-0 p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Department Scale & Academic Load</h5>
+                <span class="text-muted small">Students & Courses Comparison</span>
+            </div>
+            <div style="position: relative; height: 300px;">
+                <canvas id="deptComparisonChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card card-custom border-0 p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Academic Performance</h5>
+                <span class="text-muted small">Pass Rate by Dept</span>
+            </div>
+            <div style="position: relative; height: 300px;">
+                <canvas id="deptPassRateChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Statistics Table -->
+<div class="card card-custom border-0 mb-4 overflow-hidden">
+    <div class="card-header bg-transparent border-0 px-4 pt-4 pb-2 d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-bold mb-0">Department Academic Portfolios</h5>
+            <p class="text-secondary small mb-0">Comparative breakdown across all established faculties</p>
+        </div>
+        <a href="{% url 'academic:admin-departments' %}" class="btn btn-sm btn-outline-custom">
+            <i class="bi bi-pencil-square me-1"></i> Configure Departments
+        </a>
+    </div>
+    <div class="table-responsive px-4 pb-3">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Dept Code</th>
+                    <th>Department Name</th>
+                    <th class="text-center">Students</th>
+                    <th class="text-center">Courses</th>
+                    <th class="text-center">Average Score</th>
+                    <th class="text-center">Pass Rate</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in dept_stats %}
+                <tr>
+                    <td>
+                        <span class="badge bg-secondary-subtle text-secondary fw-semibold">{{ item.dept.code }}</span>
+                    </td>
+                    <td class="fw-medium">{{ item.dept.name }}</td>
+                    <td class="text-center">{{ item.students }}</td>
+                    <td class="text-center">{{ item.courses }}</td>
+                    <td class="text-center fw-semibold">{{ item.avg_score }}</td>
+                    <td class="text-center">
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <span class="fw-semibold {% if item.pass_rate >= 80 %}text-success{% elif item.pass_rate >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                {{ item.pass_rate }}%
+                            </span>
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'academic:dept-dashboard' %}?dept_code={{ item.dept.code }}" class="btn btn-sm btn-outline-custom">
+                            <i class="bi bi-box-arrow-in-up-right me-1"></i> View Dept Dashboard
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">
+                        No departments registered yet. Use "Departments & Courses" to set up academic departments.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Uploads and Audit Logs Split Grid -->
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card card-custom border-0 p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Recent Upload Datasets</h5>
+                    <p class="text-secondary small mb-0">All uploaded spreadsheets across the university</p>
+                </div>
+                <a href="{% url 'uploads:list' %}" class="btn btn-sm btn-outline-custom">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead>
+                        <tr>
+                            <th>Dataset</th>
+                            <th>Uploader</th>
+                            <th>Status</th>
+                            <th>Rows</th>
+                            <th>Date</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for up in recent_uploads %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">{{ up.original_filename|truncatechars:22 }}</div>
+                                <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">{{ up.get_dataset_type_display }}</span>
+                            </td>
+                            <td>{{ up.owner.username }}</td>
+                            <td>
+                                {% if up.status == "DONE" %}
+                                <span class="badge bg-success-subtle text-success">Done</span>
+                                {% elif up.status == "PROCESSING" %}
+                                <span class="badge bg-warning-subtle text-warning">Processing</span>
+                                {% elif up.status == "FAILED" %}
+                                <span class="badge bg-danger-subtle text-danger">Failed</span>
+                                {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary">{{ up.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ up.inserted_rows_count|default:up.row_count_clean }}</td>
+                            <td>{{ up.created_at|date:"M d, H:i" }}</td>
+                            <td class="text-end">
+                                <form action="{% url 'uploads:delete' up.id %}" method="post" class="d-inline" onsubmit="return confirm('Delete this upload and roll back all imported records?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete and rollback rows">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-3 text-muted">No uploads recorded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card card-custom border-0 p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">System Audit Trail</h5>
+                    <p class="text-secondary small mb-0">Who uploaded, deleted or altered data</p>
+                </div>
+                <a href="{% url 'academic:admin-audit-log' %}" class="btn btn-sm btn-outline-custom">View All</a>
+            </div>
+            <div class="list-group list-group-flush small">
+                {% for log in recent_audits %}
+                <div class="list-group-item px-0 py-2 border-0 border-bottom">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ log.user.username|default:"System" }}</strong>
+                            <span class="badge bg-secondary-subtle text-secondary ms-1" style="font-size: 0.68rem;">{{ log.action }}</span>
+                        </div>
+                        <span class="text-muted" style="font-size: 0.75rem;">{{ log.timestamp|timesince }} ago</span>
+                    </div>
+                    <div class="text-secondary mt-1 text-truncate" style="max-width: 380px;">{{ log.details }}</div>
+                </div>
+                {% empty %}
+                <div class="text-center py-3 text-muted">No audit activity logged yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const deptLabels = [{% for item in dept_stats %}"{{ item.dept.code }}",{% endfor %}];
+    const studentData = [{% for item in dept_stats %}{{ item.students }},{% endfor %}];
+    const courseData = [{% for item in dept_stats %}{{ item.courses }},{% endfor %}];
+    const passRates = [{% for item in dept_stats %}{{ item.pass_rate }},{% endfor %}];
+
+    // Chart 1: Scale Comparison
+    const ctxComp = document.getElementById("deptComparisonChart");
+    if (ctxComp && deptLabels.length > 0) {
+        new Chart(ctxComp, {
+            type: "bar",
+            data: {
+                labels: deptLabels,
+                datasets: [
+                    {
+                        label: "Students",
+                        data: studentData,
+                        backgroundColor: "#3b82f6",
+                        borderRadius: 4,
+                    },
+                    {
+                        label: "Courses",
+                        data: courseData,
+                        backgroundColor: "#10b981",
+                        borderRadius: 4,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "top" }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: "#f1f5f9" } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // Chart 2: Pass Rate Comparison
+    const ctxPass = document.getElementById("deptPassRateChart");
+    if (ctxPass && deptLabels.length > 0) {
+        new Chart(ctxPass, {
+            type: "bar",
+            data: {
+                labels: deptLabels,
+                datasets: [{
+                    label: "Pass Rate (%)",
+                    data: passRates,
+                    backgroundColor: "#f59e0b",
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { min: 0, max: 100, grid: { color: "#f1f5f9" } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
