@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Access Denied (403){% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-7 col-lg-5">
+        <div class="card card-custom border-0 shadow-sm text-center p-4 p-md-5">
+            <div class="mb-4">
+                <span class="badge bg-danger-subtle text-danger p-3 rounded-circle" style="font-size: 2.5rem;">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </span>
+            </div>
+            <h2 class="fw-bold mb-2">Access Denied</h2>
+            <p class="text-secondary mb-4">
+                {{ message|default:"You do not have permission to view or manipulate this resource." }}
+            </p>
+
+            {% if current_role %}
+            <div class="alert alert-light border text-start small mb-4">
+                <div><strong>Your Current Role:</strong> <span class="badge bg-primary-subtle text-primary">{{ current_role }}</span></div>
+                {% if required_roles %}
+                <div class="mt-1"><strong>Required Role(s):</strong> {{ required_roles|join:", " }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-center gap-2">
+                <a href="{% url 'home' %}" class="btn btn-primary-custom px-4">
+                    <i class="bi bi-house-door-fill me-1"></i> Return to My Portal
+                </a>
+                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-custom px-3">
+                    <i class="bi bi-person-fill me-1"></i> Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
