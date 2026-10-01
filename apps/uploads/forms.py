@@ -1,8 +1,22 @@
 from django import forms
-from apps.uploads.validators import validate_xlsx_file
+from django.core.exceptions import ValidationError
+from apps.uploads.models import DatasetType
+from apps.uploads.validators import (
+    validate_xlsx_file,
+    compute_file_sha256,
+    validate_duplicate_hash,
+    validate_dataset_schema,
+)
 
 
 class UploadForm(forms.Form):
+    dataset_type = forms.ChoiceField(
+        choices=DatasetType.choices,
+        initial=DatasetType.COURSES,
+        widget=forms.Select(attrs={"class": "form-select", "id": "datasetTypeSelect"}),
+        help_text="Select dataset type (Upload Order: Courses → Students → Grades → Attendance)."
+    )
+
     file = forms.FileField(
         validators=[validate_xlsx_file],
         widget=forms.FileInput(attrs={
@@ -10,7 +24,7 @@ class UploadForm(forms.Form):
             "id": "fileInput",
             "accept": ".xlsx",
         }),
-        help_text="Upload clean or messy Microsoft Excel workbook (.xlsx). Max 20 MB."
+        help_text="Upload Microsoft Excel workbook (.xlsx). Max 20 MB."
     )
 
     # Advanced configurable cleaning pipeline parameters
@@ -62,3 +76,22 @@ class UploadForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-select"}),
         help_text="Disambiguation rule for dual-numeric dates like 03/04/2024."
     )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        file_obj = cleaned_data.get("file")
+        dataset_type = cleaned_data.get("dataset_type", DatasetType.GENERIC)
+
+        if file_obj:
+            # 1. Security & format checks
+            validate_xlsx_file(file_obj)
+
+            # 2. Check duplicate hash
+            sha256 = compute_file_sha256(file_obj)
+            validate_duplicate_hash(sha256)
+            cleaned_data["sha256"] = sha256
+
+            # 3. Check dataset schema & upload order prerequisites
+            validate_dataset_schema(file_obj, dataset_type)
+
+        return cleaned_data

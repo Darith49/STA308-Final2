@@ -168,6 +168,15 @@ def run_pipeline_for_upload(upload_id: str):
         upload.cleaned_file.name = f"cleaned/{clean_xlsx_filename}"
         upload.cleaned_csv.name = f"cleaned/{clean_csv_filename}"
 
+        # Import domain records into relational tables (Courses, Students, Grades, Attendance)
+        if upload.dataset_type and upload.dataset_type != "generic":
+            upload.current_step = f"Validating and importing {upload.get_dataset_type_display()} records..."
+            upload.save(update_fields=["current_step"])
+            from apps.academic.importers import import_domain_dataset
+            inserted_count = import_domain_dataset(upload, clean_df)
+            upload.inserted_rows_count = inserted_count
+            upload.save(update_fields=["inserted_rows_count"])
+
         # Mark done
         upload.mark_done(
             quality_score=report_data.overall_score,

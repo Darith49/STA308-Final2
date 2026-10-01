@@ -28,9 +28,18 @@ class UploadStatus(models.TextChoices):
     FAILED = "FAILED", "Failed"
 
 
+class DatasetType(models.TextChoices):
+    COURSES = "courses", "Courses"
+    STUDENTS = "students", "Students"
+    GRADES = "grades", "Grades"
+    ATTENDANCE = "attendance", "Attendance"
+    GENERIC = "generic", "Generic Spreadsheet"
+
+
 class Upload(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="uploads")
+    dataset_type = models.CharField(max_length=30, choices=DatasetType.choices, default=DatasetType.GENERIC)
     original_filename = models.CharField(max_length=255)
     stored_file = models.FileField(upload_to=upload_path_handler)
     cleaned_file = models.FileField(upload_to=cleaned_path_handler, null=True, blank=True)
@@ -49,6 +58,7 @@ class Upload(models.Model):
     row_count_clean = models.IntegerField(default=0)
     col_count_raw = models.IntegerField(default=0)
     col_count_clean = models.IntegerField(default=0)
+    inserted_rows_count = models.IntegerField(default=0)
     quality_score = models.FloatField(null=True, blank=True)
     config_options = models.JSONField(default=dict, blank=True)
 
@@ -156,3 +166,18 @@ class QualityReport(models.Model):
 
     def __str__(self):
         return f"Quality Report ({self.quality_score:.1f}) for {self.upload_id}"
+
+
+class UploadError(models.Model):
+    upload = models.ForeignKey(Upload, on_delete=models.CASCADE, related_name="errors")
+    row_number = models.IntegerField(help_text="Spreadsheet row index (1-based)")
+    column_name = models.CharField(max_length=150, blank=True)
+    raw_value = models.TextField(blank=True)
+    reason = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["row_number", "id"]
+
+    def __str__(self):
+        return f"Row {self.row_number} [{self.column_name}]: {self.reason}"
