@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.uploads",
     "apps.dashboards",
+    "apps.academic",
 ]
 
 MIDDLEWARE = [
