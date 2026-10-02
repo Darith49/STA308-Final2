@@ -7,10 +7,8 @@ from .models import Profile, Role
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         role = Role.ADMIN if instance.is_superuser else Role.DEPT_HEAD
-        Profile.objects.create(user=instance, role=role)
+        Profile.objects.get_or_create(user=instance, defaults={'role': role})
     else:
-        if hasattr(instance, 'profile'):
-            instance.profile.save()
-        else:
+        if not hasattr(instance, 'profile'):
             role = Role.ADMIN if instance.is_superuser else Role.DEPT_HEAD
             Profile.objects.create(user=instance, role=role)

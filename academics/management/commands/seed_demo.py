@@ -70,7 +70,7 @@ class Command(BaseCommand):
             ('admin', 'admin@university.edu', Role.ADMIN, None, True),
             ('registrar', 'registrar@university.edu', Role.REGISTRAR, None, False),
             ('dept_head', 'head.cs@university.edu', Role.DEPT_HEAD, dept_objs['CS'], False),
-            ('student', 'student@university.edu', Role.STUDENT, dept_objs['CS'], False),
+            ('student', 'student@university.edu', Role.STUDENT, None, False),
         ]
 
         user_objs = {}
@@ -90,6 +90,7 @@ class Command(BaseCommand):
             profile.role = role
             profile.department = dept
             profile.save()
+            user.refresh_from_db()
             user_objs[username] = user
         self.stdout.write(self.style.SUCCESS("Seeded 4 demo users (admin, registrar, dept_head, student) with password 'Password123!'."))
 
@@ -123,8 +124,13 @@ class Command(BaseCommand):
 
         # Link demo student account to STU1001
         student_user = user_objs['student']
-        student_user.profile.student_record = stu_objs['STU1001']
-        student_user.profile.save()
+        student_profile = Profile.objects.get(user=student_user)
+        student_profile.role = Role.STUDENT
+        student_profile.department = None
+        Profile.objects.filter(student_record=stu_objs['STU1001']).exclude(id=student_profile.id).update(student_record=None)
+        student_profile.student_record = stu_objs['STU1001']
+        student_profile.save()
+        student_user.refresh_from_db()
         self.stdout.write(self.style.SUCCESS(f"Seeded {len(stu_objs)} students."))
 
         # 6. Seed Enrollments & Grades

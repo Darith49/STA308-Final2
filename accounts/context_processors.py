@@ -29,6 +29,10 @@ def user_role_context(request):
             'user_department': None,
         }
 
+    user_dept = profile.department
+    if not user_dept and profile.is_student and profile.student_record and profile.student_record.program:
+        user_dept = profile.student_record.program.department
+
     return {
         'current_profile': profile,
         'is_admin': profile.is_admin,
@@ -37,5 +41,5 @@ def user_role_context(request):
         'is_student': profile.is_student,
         'can_upload': profile.can_upload,
         'can_manage_users': profile.can_manage_users,
-        'user_department': profile.department,
+        'user_department': user_dept,
     }

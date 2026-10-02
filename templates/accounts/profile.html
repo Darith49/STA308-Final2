@@ -28,15 +28,25 @@
           <div class="font-mono font-xs text-dark">{{ user.email|default:'Not specified' }}</div>
         </div>
         <div class="col-md-6">
-          <label class="text-caption text-muted mb-1 d-block">Assigned Department</label>
+          <label class="text-caption text-muted mb-1 d-block">{% if profile.is_student %}Academic Program & Department{% else %}Assigned Department{% endif %}</label>
           <div class="text-dark fw-medium font-xs">
-            {% if profile.department %}
+            {% if profile.is_student and profile.student_record %}
+            <span class="badge badge-dept">{{ profile.student_record.program.department.code }}</span> {{ profile.student_record.program.name }} (Year {{ profile.student_record.year }})
+            {% elif profile.department %}
             <span class="badge badge-dept">{{ profile.department.code }}</span> {{ profile.department.name }}
             {% else %}
             <span class="text-secondary">University-wide (Unrestricted)</span>
             {% endif %}
           </div>
         </div>
+        {% if profile.is_student and profile.student_record %}
+        <div class="col-md-6">
+          <label class="text-caption text-muted mb-1 d-block">Linked Student Record</label>
+          <div class="font-mono font-xs text-dark fw-semibold">
+            {{ profile.student_record.student_id }} — {{ profile.student_record.name }}
+          </div>
+        </div>
+        {% endif %}
         <div class="col-md-6">
           <label class="text-caption text-muted mb-1 d-block">Account Created</label>
           <div class="font-mono font-xs text-secondary">{{ user.date_joined|date:"Y-m-d H:i" }}</div>
